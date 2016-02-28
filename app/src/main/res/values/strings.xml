@@ -168,5 +168,4 @@
     <string name="catalog_view">Catalog View</string>
     <string name="action_filter">Filter</string>
     <string name="title_activity_comic_summary">ComicSummary</string>
-    <string name="title_activity_test">test</string>
 </resources>
