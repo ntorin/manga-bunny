@@ -6,6 +6,7 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -214,6 +215,12 @@ public class SiteSearch extends ListActivity{
         }
     }
         */
+
+@Override
+public void onListItemClick(ListView l, View v, int position, long id) {
+    Intent intent = new Intent(this, DescriptionChapters.class); //l 
+    startActivity(intent);
+}
 }
 
 class DBAdapter extends CursorAdapter{

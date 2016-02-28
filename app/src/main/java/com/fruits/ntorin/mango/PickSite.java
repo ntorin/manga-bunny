@@ -2,7 +2,6 @@ package com.fruits.ntorin.mango;
 
 import android.app.ListActivity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -14,6 +13,7 @@ public class PickSite extends ListActivity {
 
     ArrayList<String> siteList;
     ArrayAdapter<String> aAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
