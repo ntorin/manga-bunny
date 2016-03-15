@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
  */
 public class DirectoryDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 8;
     private static final String DATABASE_NAME = "Directory.db";
 
 
@@ -28,6 +28,7 @@ public class DirectoryDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL(DirectoryContract.SQL_DELETE_ENTRIES);
+        db.execSQL(DirectoryContract.SQL_CREATE_ENTRIES);
     }
 }

@@ -3,12 +3,14 @@ package com.fruits.ntorin.mango;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v4.widget.CursorAdapter;
@@ -74,7 +76,7 @@ public class SiteSearch extends ListActivity{
 
 
         //ListView listView = (ListView) findViewById(R.id.search_list);
-       // RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_list_directory);
+        //RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_list_directory);
         //RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
         //recyclerView.setLayoutManager(layoutManager);
@@ -95,6 +97,7 @@ public class SiteSearch extends ListActivity{
        // this.setListAdapter(simpleCursorAdapter);
         Log.d("d", "cursor adapter set");
         //setAdapter(aAdapter);
+
 
     }
 
@@ -130,6 +133,10 @@ public class SiteSearch extends ListActivity{
                     values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, title.attr("href"));
                     db.insert(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null, values);
                     Log.d("z", "value put and inserted");
+                    c++;
+                    if(c > 50){ //// FIXME
+                        break;
+                    }
                     //publishProgress();
 
                 }
@@ -138,7 +145,7 @@ public class SiteSearch extends ListActivity{
             }
 
             //Log.d("cz", "" + selectQuery.toString());
-            /*if(selectQuery.moveToFirst()){
+            /**if(selectQuery.moveToFirst()){
                 do{
                     //siteList.add(selectQuery.getString(selectQuery.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE)));
                     Log.d("a",selectQuery.getString(selectQuery.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE)));
@@ -162,7 +169,10 @@ public class SiteSearch extends ListActivity{
                     String[] from = {DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE};
                     int[] to = {R.id.site_search_content};
                     //Cursor selectQuery = db.query(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, from, null, null, null, null, null);
-                    Cursor selectQuery = db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + " FROM " + DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null);
+                    Cursor selectQuery = db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + " FROM " +
+                            DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null);
                     /*if(selectQuery.moveToFirst()){
                         do{
                             //siteList.add(selectQuery.getString(selectQuery.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE)));
@@ -172,6 +182,7 @@ public class SiteSearch extends ListActivity{
                         } while(selectQuery.moveToNext());
                     }*/
                     simpleCursorAdapter = new SimpleCursorAdapter(activity, R.layout.site_item, selectQuery, from, to, 0);
+                    //Log.d("n", simpleCursorAdapter.getCursor().getColumnNames()[0] + " " + simpleCursorAdapter.getCursor().getColumnNames()[1] + " " + simpleCursorAdapter.getCursor().getColumnNames()[2]);
                     activity.setListAdapter(simpleCursorAdapter);
                     //simpleCursorAdapter.notifyDataSetChanged();
                     Log.d("c", "approached notify");
@@ -219,8 +230,19 @@ public class SiteSearch extends ListActivity{
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Intent intent = new Intent(this, DescriptionChapters.class);
+        Bundle bundle = new Bundle();
+        //SQLiteCursor test = (SQLiteCursor) simpleCursorAdapter.getItem(position);
+        SQLiteCursor test = (SQLiteCursor) simpleCursorAdapter.getCursor();
+        test.moveToPosition(position);
+        String title = test.getString(test.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE));
+        String href = test.getString(test.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF));
+        bundle.putString("title", title);
+        bundle.putString("href", href);
+        intent.putExtras(bundle);
+        //bundle.putString(); //TODO: 3/7/2016
         startActivity(intent);
     }
+
 }
 
 class DBAdapter extends CursorAdapter{

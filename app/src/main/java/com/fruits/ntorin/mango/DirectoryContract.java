@@ -20,8 +20,8 @@ public final class DirectoryContract {
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + DirectoryEntry.MANGAFOX_TABLE_NAME + " (" +
             DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    DirectoryEntry.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
-                    DirectoryEntry.COLUMN_NAME_HREF + TEXT_TYPE + " )";
+                    DirectoryEntry.COLUMN_NAME_TITLE + " TEXT," +
+                    DirectoryEntry.COLUMN_NAME_HREF + " TEXT" + " )";
 
     public static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + DirectoryEntry.MANGAFOX_TABLE_NAME;

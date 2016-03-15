@@ -89,6 +89,8 @@ public class Home extends AppCompatActivity implements FavoritesList.OnFragmentI
                 return true;
 
             case R.id.catalog_view:
+                intent = new Intent(this, Reader.class);
+                startActivity(intent);
                 return true;
 
 
