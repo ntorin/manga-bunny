@@ -14,6 +14,7 @@ import com.fruits.ntorin.mango.dummy.DummyContent;
 import com.fruits.ntorin.mango.dummy.DummyContent.DummyItem;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A fragment representing a list of Items.
@@ -28,6 +29,7 @@ public class ChaptersFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private RecyclerView mRecyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -63,13 +65,13 @@ public class ChaptersFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyChaptersRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            //mRecyclerView.setAdapter(new MyChaptersRecyclerViewAdapter(DummyContent.ITEM_MAP, mListener));
         }
         return view;
     }
@@ -92,6 +94,10 @@ public class ChaptersFragment extends Fragment {
         mListener = null;
     }
 
+    public void setAdapter(Map<String, Chapter> map){
+        mRecyclerView.setAdapter(new MyChaptersRecyclerViewAdapter(map, mListener));
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -104,6 +110,6 @@ public class ChaptersFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Chapter item);
     }
 }

@@ -15,8 +15,6 @@ public final class DirectoryContract {
         public static final String COLUMN_NAME_HREF = "href";
     }
 
-    private static final String TEXT_TYPE = " TEXT";
-    private static final String COMMA_SEP = ",";
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + DirectoryEntry.MANGAFOX_TABLE_NAME + " (" +
             DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +

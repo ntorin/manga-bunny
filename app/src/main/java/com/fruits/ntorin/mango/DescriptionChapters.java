@@ -27,6 +27,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DescriptionChapters extends AppCompatActivity
         implements DescriptionFragment.OnFragmentInteractionListener,
@@ -96,11 +98,12 @@ public class DescriptionChapters extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private class AsyncFetchTitle extends AsyncTask<Void, String, Void>{
+    private class AsyncFetchTitle extends AsyncTask<Void, ProgressUpdate, Void>{
 
 
         String href;
         String description;
+        Map<String, Chapter> chMap;
 
         public AsyncFetchTitle(String href){
             super();
@@ -112,12 +115,19 @@ public class DescriptionChapters extends AppCompatActivity
             try{
                 Document document = Jsoup.connect(href).get();
                 Log.d("c", "connected to " + href);
-                Elements li = document.getElementsByClass("summary");
-                for(Element element : li){
-                    Log.d("s", "setting text");
-                    descriptionFragment.setText(element.text());
-                    Log.d("s", "set text");
+                Elements summary = document.getElementsByClass("summary");
+                Elements chapters = document.getElementsByClass("tips"); // a class that's similar to DummyItem, but stores chapter info
+                int ch = 1;
+                chMap = new HashMap<String, Chapter>();
+                for (Element element : chapters){
+                    Log.d("t", element.attr("href"));
+                    chMap.put(String.valueOf(ch), new Chapter(element.text(), element.attr("href")));
+                    ch++;
                 }
+                Log.d("s", "setting text");
+                    //descriptionFragment.setText(element.text());
+                    publishProgress(new ProgressUpdate(summary.first().text(), chMap));
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -125,10 +135,13 @@ public class DescriptionChapters extends AppCompatActivity
         }
 
         @Override
-        protected void onProgressUpdate(String... progress){
+        protected void onProgressUpdate(final ProgressUpdate... progress){
             runOnUiThread(new Runnable(){
                 @Override
                 public void run(){
+                    descriptionFragment.setText(progress[0].description);
+                    Log.d("s", "set text");
+                    chaptersFragment.setAdapter(progress[0].map);
 
                 }
             });
@@ -146,10 +159,25 @@ public class DescriptionChapters extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
+    public void onListFragmentInteraction(Chapter item) {
+        Intent intent = new Intent(this, Reader.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("href", item.content);
+        intent.putExtras(bundle);
+        //startActivity(intent);
+        Log.d("a", item.content);
     }
 
+    class ProgressUpdate{
+        public final String description;
+        public final Map<String, Chapter> map;
+
+        public ProgressUpdate(String description, Map<String, Chapter> map){
+            this.description = description;
+            this.map = map;
+        }
+
+    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -170,7 +198,7 @@ public class DescriptionChapters extends AppCompatActivity
             switch(position){
                 case 0:
                     descriptionFragment = DescriptionFragment.newInstance(position + 1);
-                    return descriptionFragment; //// TODO: 3/15/2016 switch
+                    return descriptionFragment;
                 case 1:
                     chaptersFragment = ChaptersFragment.newInstance(position + 1);
                     return chaptersFragment;
@@ -181,8 +209,8 @@ public class DescriptionChapters extends AppCompatActivity
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show x total pages.
+            return 2;
         }
 
         @Override

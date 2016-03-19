@@ -1,6 +1,7 @@
 package com.fruits.ntorin.mango;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import com.fruits.ntorin.mango.ChaptersFragment.OnListFragmentInteractionListene
 import com.fruits.ntorin.mango.dummy.DummyContent.DummyItem;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
@@ -18,10 +20,10 @@ import java.util.List;
  */
 public class MyChaptersRecyclerViewAdapter extends RecyclerView.Adapter<MyChaptersRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final Map<String, Chapter> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyChaptersRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyChaptersRecyclerViewAdapter(Map<String, Chapter> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -35,9 +37,9 @@ public class MyChaptersRecyclerViewAdapter extends RecyclerView.Adapter<MyChapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mItem = mValues.get(String.valueOf(position + 1));
+        holder.mIdView.setText(mValues.get(String.valueOf(position + 1)).id);
+        //holder.mContentView.setText(mValues.get(String.valueOf(position + 1)).content);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,11 +58,13 @@ public class MyChaptersRecyclerViewAdapter extends RecyclerView.Adapter<MyChapte
         return mValues.size();
     }
 
+
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public Chapter mItem;
 
         public ViewHolder(View view) {
             super(view);
@@ -68,6 +72,8 @@ public class MyChaptersRecyclerViewAdapter extends RecyclerView.Adapter<MyChapte
             mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.content);
         }
+
+
 
         @Override
         public String toString() {

@@ -10,8 +10,8 @@ import android.provider.BaseColumns;
  */
 public class DirectoryDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 8;
-    private static final String DATABASE_NAME = "Directory.db";
+    private static final int DATABASE_VERSION = 9;
+    private static final String DATABASE_NAME = "MangoDirectory.db";
 
 
 
