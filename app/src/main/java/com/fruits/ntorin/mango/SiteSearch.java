@@ -19,13 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-import java.util.Iterator;
 
 public class SiteSearch extends ListActivity{
 
@@ -39,8 +33,9 @@ public class SiteSearch extends ListActivity{
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_site_search);
+        Intent intent = this.getIntent();
 
-        new AsyncFetchDirectory(this).execute();
+        new AsyncFetchDirectory(this).execute(intent.getStringExtra("site"));
         Log.d("d", "cursor adapter set");
 
 
@@ -52,9 +47,8 @@ public class SiteSearch extends ListActivity{
         return true;
     }
 
-    private class AsyncFetchDirectory extends AsyncTask<Void, String, Void>{
+    private class AsyncFetchDirectory extends AsyncTask<String, String, Void>{
 
-        Element title;
         ContentValues values = new ContentValues();
         SQLiteDatabase db = ddbHelper.getWritableDatabase();
         ListActivity activity;
@@ -64,38 +58,21 @@ public class SiteSearch extends ListActivity{
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-
-            DirectorySetup.MangafoxSetup(title, values, db);
-
-            try {
-                Document document = Jsoup.connect("http://mangafox.me/manga/").get();
-                Elements li = document.getElementById("page").getElementsByClass("series_preview");
-                Iterator i = li.iterator();
-                int c = 0;
-                for(Element element : li){
-                    title = element;
-                    values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, title.text());
-                    values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, title.attr("href"));
-                    db.insert(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null, values);
-                    Log.d("z", "value put and inserted");
-                    c++;
-                    if(c > 50){ //// FIXME testing purposes
-                        break;
-                    }
-
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        protected Void doInBackground(String... params) {
+            if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME)){
+                DirectorySetup.MangafoxSetup(values, db);
+            }else if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME)){
+                DirectorySetup.MangaHereSetup(values, db);
+            }else if(params[0].equals(DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME)){
+                DirectorySetup.BatotoSetup(values, db);
             }
-            publishProgress();
 
+            publishProgress(params[0]);
             return null;
-
         }
 
         @Override
-        protected void onProgressUpdate(String... progress) {
+        protected void onProgressUpdate(final String... tableName) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -104,7 +81,7 @@ public class SiteSearch extends ListActivity{
                     Cursor selectQuery = db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
                             DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
                             DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + " FROM " +
-                            DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null);
+                            tableName[0], null);
                     simpleCursorAdapter = new SimpleCursorAdapter(activity, R.layout.site_item, selectQuery, from, to, 0);
                     activity.setListAdapter(simpleCursorAdapter);
                     Log.d("c", "approached notify");

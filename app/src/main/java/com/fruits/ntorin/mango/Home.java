@@ -20,7 +20,7 @@ import android.widget.SearchView;
 /*
 Starting Date: January 29, 2016
  */
-public class Home extends AppCompatActivity implements FavoritesList.OnFragmentInteractionListener {
+public class Home extends AppCompatActivity /*implements FavoritesList.OnFragmentInteractionListener*/ {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +36,11 @@ public class Home extends AppCompatActivity implements FavoritesList.OnFragmentI
                 return;
             }
 
-            FavoritesList favoritesList = new FavoritesList();
-            favoritesList.setArguments(getIntent().getExtras());
+            //FavoritesList favoritesList = new FavoritesList();
+            //favoritesList.setArguments(getIntent().getExtras());
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, favoritesList).commit();
+            //getSupportFragmentManager().beginTransaction()
+            //        .add(R.id.fragment_container, favoritesList).commit();
 
 
         }
@@ -82,10 +82,10 @@ public class Home extends AppCompatActivity implements FavoritesList.OnFragmentI
                 return true;
 
             case R.id.list_view:
-                FavoritesList favoritesList = new FavoritesList();
+                //FavoritesList favoritesList = new FavoritesList();
                 android.support.v4.app.FragmentTransaction transaction =
                         getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, favoritesList);
+                //transaction.replace(R.id.fragment_container, favoritesList);
                 return true;
 
             case R.id.catalog_view:
@@ -99,7 +99,7 @@ public class Home extends AppCompatActivity implements FavoritesList.OnFragmentI
         }
     }
 
-    @Override
+    //@Override
     public void onFragmentInteraction(Uri uri) {
 
     }

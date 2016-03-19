@@ -17,7 +17,7 @@ import java.util.Iterator;
  */
 public class DirectorySetup {
 
-    public static void MangafoxSetup(Element title, ContentValues values, SQLiteDatabase db){
+    public static void MangafoxSetup(ContentValues values, SQLiteDatabase db){
 
         try {
             Document document = Jsoup.connect("http://mangafox.me/manga/").get();
@@ -25,7 +25,7 @@ public class DirectorySetup {
             Iterator i = li.iterator();
             int c = 0;
             for(Element element : li){
-                title = element;
+                Element title = element;
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, title.text());
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, title.attr("href"));
                 db.insert(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null, values);
@@ -40,5 +40,16 @@ public class DirectorySetup {
             e.printStackTrace();
         }
 
+    }
+
+    public static void MangaHereSetup(ContentValues values, SQLiteDatabase db) {
+        Log.d("WIP", "Work in progress. Please turn back for now!");
+       // Document document = Jsoup.connect("").get(); //// FIXME: 3/19/2016
+
+    }
+
+    public static void BatotoSetup(ContentValues values, SQLiteDatabase db) {
+        Log.d("WIP", "Work in progress. Please turn back for now!");
+       // Document document = Jsoup.connect("").get(); //// FIXME: 3/19/2016
     }
 }
