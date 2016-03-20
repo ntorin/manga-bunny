@@ -11,20 +11,39 @@ public final class DirectoryContract {
 
     public static abstract class DirectoryEntry implements BaseColumns {
         public static final String MANGAFOX_TABLE_NAME = "Mangafox";
+        public static final String MANGAHERE_TABLE_NAME = "MangaHere";
+        public static final String BATOTO_TABLE_NAME = "Batoto";
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_HREF = "href";
     }
 
-    private static final String TEXT_TYPE = " TEXT";
-    private static final String COMMA_SEP = ",";
-    public static final String SQL_CREATE_ENTRIES =
+    public static final String SQL_CREATE_MANGAFOX_TABLE =
             "CREATE TABLE " + DirectoryEntry.MANGAFOX_TABLE_NAME + " (" +
-            DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    DirectoryEntry.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
-                    DirectoryEntry.COLUMN_NAME_HREF + TEXT_TYPE + " )";
+                    DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    DirectoryEntry.COLUMN_NAME_TITLE + " TEXT," +
+                    DirectoryEntry.COLUMN_NAME_HREF + " TEXT" + " )";
 
-    public static final String SQL_DELETE_ENTRIES =
+    public static final String SQL_CREATE_MANGAHERE_TABLE =
+            "CREATE TABLE " + DirectoryEntry.MANGAHERE_TABLE_NAME + " (" +
+                    DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    DirectoryEntry.COLUMN_NAME_TITLE + " TEXT," +
+                    DirectoryEntry.COLUMN_NAME_HREF + " TEXT" + " )";
+
+    public static final String SQL_CREATE_BATOTO_TABLE =
+            "CREATE TABLE " + DirectoryEntry.BATOTO_TABLE_NAME + " (" +
+                DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                DirectoryEntry.COLUMN_NAME_TITLE + " TEXT," +
+                DirectoryEntry.COLUMN_NAME_HREF + " TEXT" + " )";
+
+
+    public static final String SQL_DELETE_MANGAFOX_TABLE =
             "DROP TABLE IF EXISTS " + DirectoryEntry.MANGAFOX_TABLE_NAME;
+
+    public static final String SQL_DELETE_MANGAHERE_TABLE =
+            "DROP TABLE IF EXISTS " + DirectoryEntry.MANGAHERE_TABLE_NAME;
+
+    public static final String SQL_DELETE_BATOTO_TABLE =
+            "DROP TABLE IF EXISTS " + DirectoryEntry.BATOTO_TABLE_NAME;
 
 
 }

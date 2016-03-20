@@ -167,4 +167,7 @@
     <string name="list_view">List View</string>
     <string name="catalog_view">Catalog View</string>
     <string name="action_filter">Filter</string>
+    <string name="title_activity_comic_summary">ComicSummary</string>
+    <string name="title_activity_reader">Reader</string>
+    <string name="title_activity_tabtest">tabtest</string>
 </resources>

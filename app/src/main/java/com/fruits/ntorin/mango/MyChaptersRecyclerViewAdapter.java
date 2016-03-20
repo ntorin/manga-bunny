@@ -1,27 +1,29 @@
 package com.fruits.ntorin.mango;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.fruits.ntorin.mango.ListFragment.OnListFragmentInteractionListener;
+import com.fruits.ntorin.mango.ChaptersFragment.OnListFragmentInteractionListener;
 import com.fruits.ntorin.mango.dummy.DummyContent.DummyItem;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyListRecyclerViewAdapter extends RecyclerView.Adapter<MyListRecyclerViewAdapter.ViewHolder> {
+public class MyChaptersRecyclerViewAdapter extends RecyclerView.Adapter<MyChaptersRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final Map<String, Chapter> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyListRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyChaptersRecyclerViewAdapter(Map<String, Chapter> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -29,15 +31,15 @@ public class MyListRecyclerViewAdapter extends RecyclerView.Adapter<MyListRecycl
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_list, parent, false);
+                .inflate(R.layout.fragment_chapters, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mItem = mValues.get(String.valueOf(position + 1));
+        holder.mIdView.setText(mValues.get(String.valueOf(position + 1)).id);
+        //holder.mContentView.setText(mValues.get(String.valueOf(position + 1)).content);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,11 +58,13 @@ public class MyListRecyclerViewAdapter extends RecyclerView.Adapter<MyListRecycl
         return mValues.size();
     }
 
+
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public Chapter mItem;
 
         public ViewHolder(View view) {
             super(view);
@@ -68,6 +72,8 @@ public class MyListRecyclerViewAdapter extends RecyclerView.Adapter<MyListRecycl
             mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.content);
         }
+
+
 
         @Override
         public String toString() {

@@ -10,8 +10,8 @@ import android.provider.BaseColumns;
  */
 public class DirectoryDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 4;
-    private static final String DATABASE_NAME = "Directory.db";
+    private static final int DATABASE_VERSION = 10;
+    private static final String DATABASE_NAME = "MangoDirectory.db";
 
 
 
@@ -22,12 +22,20 @@ public class DirectoryDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DirectoryContract.SQL_DELETE_ENTRIES);
-        db.execSQL(DirectoryContract.SQL_CREATE_ENTRIES);
+        db.execSQL(DirectoryContract.SQL_DELETE_MANGAFOX_TABLE);
+        db.execSQL(DirectoryContract.SQL_DELETE_MANGAHERE_TABLE);
+        db.execSQL(DirectoryContract.SQL_DELETE_BATOTO_TABLE);
+
+        db.execSQL(DirectoryContract.SQL_CREATE_MANGAFOX_TABLE);
+        db.execSQL(DirectoryContract.SQL_CREATE_MANGAHERE_TABLE);
+        db.execSQL(DirectoryContract.SQL_CREATE_BATOTO_TABLE);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL(DirectoryContract.SQL_DELETE_MANGAFOX_TABLE);
+        db.execSQL(DirectoryContract.SQL_DELETE_MANGAHERE_TABLE);
+        db.execSQL(DirectoryContract.SQL_DELETE_BATOTO_TABLE);
     }
 }

@@ -3,7 +3,7 @@
     package="com.fruits.ntorin.mango">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name = "android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -27,17 +27,20 @@
         <activity android:name=".PickSite" />
         <activity android:name=".SiteSearch" />
         <activity
-            android:name=".DescriptionChapters"
-            android:label="@string/title_activity_description_chapters"
-            android:parentActivityName=".SiteSearch"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fruits.ntorin.mango.SiteSearch" />
-        </activity>
-        <activity
             android:name=".ScrollingActivity"
             android:label="@string/title_activity_scrolling"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Reader"
+            android:label="@string/title_activity_reader"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".tabtest"
+            android:label="@string/title_activity_tabtest"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DescriptionChapters"
+            android:label="@string/title_activity_description_chapters"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
