@@ -3,22 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.fruits.ntorin.mango.Home">
 
+
+    <!--app:showAsAction="ifRoom|collapseActionView" -->
     <item
         android:id="@+id/action_search"
         android:title="@string/action_search"
         android:icon="@drawable/ic_action_search"
-        app:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="always|collapseActionView"
         app:actionViewClass="android.support.v7.widget.SearchView" />
 
     <item
-        android:id="@+id/list_view"
-        android:title="@string/list_view"
-        android:icon="@drawable/ic_action_view_as_grid"
-        app:showAsAction="always" />
+        android:id="@+id/action_search_settings"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/action_menu"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menuSortNewest"
+                android:title="Sort by newest" />
+            <item
+                android:id="@+id/menuSortRating"
+                android:title="Sort by rating" />
+        </menu>
+
+        </item>
 
     <item
         android:id="@+id/catalog_view"
         android:title="@string/catalog_view"
+        android:icon="@drawable/ic_action_view_as_grid"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/list_view"
+        android:title="@string/list_view"
         android:icon="@drawable/ic_action_view_as_list"
         app:showAsAction="always" />
 
@@ -28,11 +46,7 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_menu"
-        android:icon="@drawable/ic_menu_gallery"
-        android:title="@string/action_menu"
-        app:showAsAction="never" />
+
 
     <item
         android:id="@+id/help"

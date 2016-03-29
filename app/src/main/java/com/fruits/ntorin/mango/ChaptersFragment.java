@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ public class ChaptersFragment extends Fragment {
     public static ChaptersFragment newInstance(int columnCount) {
         ChaptersFragment fragment = new ChaptersFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putInt(ARG_COLUMN_COUNT, 1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,9 +53,11 @@ public class ChaptersFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d("mcol", "" + mColumnCount);
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        Log.d("mcol", "" + mColumnCount);
     }
 
     @Override
@@ -67,8 +70,10 @@ public class ChaptersFragment extends Fragment {
             Context context = view.getContext();
             mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
+                Log.d("a", "less than 2");
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
+                Log.d("b", "more than 1");
                 mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             //mRecyclerView.setAdapter(new MyChaptersRecyclerViewAdapter(DummyContent.ITEM_MAP, mListener));

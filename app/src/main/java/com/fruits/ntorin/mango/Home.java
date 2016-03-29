@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +23,8 @@ Starting Date: January 29, 2016
  */
 public class Home extends AppCompatActivity /*implements FavoritesList.OnFragmentInteractionListener*/ {
 
+    //SQLiteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +32,9 @@ public class Home extends AppCompatActivity /*implements FavoritesList.OnFragmen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //db = new DirectoryDbHelper(this).getWritableDatabase();
+
+        //DirectorySetup.MangafoxSetup(db);
 
         if (findViewById(R.id.fragment_container) != null) {
 
@@ -49,7 +55,7 @@ public class Home extends AppCompatActivity /*implements FavoritesList.OnFragmen
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), PickSite.class);
+                Intent intent = new Intent(view.getContext(), AppHome.class);
                 startActivity(intent);
             }
         });
@@ -76,7 +82,7 @@ public class Home extends AppCompatActivity /*implements FavoritesList.OnFragmen
                 startActivity(intent);
                 return true;
 
-            case R.id.action_menu:
+            case R.id.action_search_settings:
                 intent = new Intent(this, DescriptionChapters.class);
                 startActivity(intent);
                 return true;
@@ -89,7 +95,7 @@ public class Home extends AppCompatActivity /*implements FavoritesList.OnFragmen
                 return true;
 
             case R.id.catalog_view:
-                intent = new Intent(this, Reader.class);
+                intent = new Intent(this, ChapterReader.class);
                 startActivity(intent);
                 return true;
 

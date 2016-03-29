@@ -70,7 +70,10 @@ public class DescriptionChapters extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+
+
         Intent intent = this.getIntent();
+        setTitle(intent.getStringExtra("title"));
         new AsyncFetchTitle(intent.getStringExtra("href")).execute();
 
     }
@@ -160,12 +163,12 @@ public class DescriptionChapters extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(Chapter item) {
-        Intent intent = new Intent(this, Reader.class);
+        Intent intent = new Intent(this, ChapterReader.class);
         Bundle bundle = new Bundle();
         bundle.putString("href", item.content);
         intent.putExtras(bundle);
-        //startActivity(intent);
-        Log.d("a", item.content);
+        Log.d("toChapterReader", item.content);
+        startActivity(intent);
     }
 
     class ProgressUpdate{

@@ -17,7 +17,11 @@ import java.util.Iterator;
  */
 public class DirectorySetup {
 
-    public static void MangafoxSetup(ContentValues values, SQLiteDatabase db){
+    static ContentValues values = new ContentValues();
+
+    public static void MangafoxSetup(SQLiteDatabase db){
+
+        Log.d("mfoxsetup", "executing setup");
 
         try {
             Document document = Jsoup.connect("http://mangafox.me/manga/").get();
