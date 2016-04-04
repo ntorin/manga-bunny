@@ -91,7 +91,7 @@ public class DirectoryFragment extends Fragment {
         }
 
         setHasOptionsMenu(true);
-        new AsyncFetchDirectory(this).execute("Mangafox");
+        new AsyncFetchDirectory(this).execute("Mangahere");
     }
 
     @Override
@@ -142,7 +142,6 @@ public class DirectoryFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
 
     @Override

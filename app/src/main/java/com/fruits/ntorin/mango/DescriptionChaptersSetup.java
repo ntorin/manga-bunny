@@ -1,0 +1,76 @@
+package com.fruits.ntorin.mango;
+
+import android.util.Log;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by Ntori on 4/3/2016.
+ */
+public class DescriptionChaptersSetup {
+    public static TitlePackage MangafoxTitleSetup(String href, Map<String, Chapter> chMap) {
+        Elements summary = null;
+        try {
+            Document document = Jsoup.connect(href).get();
+            Log.d("c", "connected to " + href);
+            summary = document.getElementsByClass("summary");
+            Elements chapters = document.getElementsByClass("tips"); // a class that's similar to DummyItem, but stores chapter info
+            int ch = 1;
+            chMap = new HashMap<String, Chapter>();
+            for (Element element : chapters) {
+                Log.d("DescriptionChaptersSet", element.attr("href"));
+                chMap.put(String.valueOf(ch), new Chapter(element.text(), element.attr("href")));
+                ch++;
+            }
+            Log.d("DescriptionChaptersSet", "setting text");
+            //descriptionFragment.setText(element.text());
+            //publishProgress(new ProgressUpdate(summary.first().text(), chMap));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new TitlePackage(summary, chMap);
+    }
+
+    public static TitlePackage MangahereTitleSetup(String href, Map<String, Chapter> chMap){
+        Elements summary = new Elements();
+        try {
+            Document document = Jsoup.connect(href).get();
+            Log.d("c", "connected to " + href);
+            summary.add(document.getElementById("show"));
+            Elements chapters = document.getElementsByClass("detail_list").first().getElementsByClass("left"); // a class that's similar to DummyItem, but stores chapter info
+            int ch = 1;
+            chMap = new HashMap<String, Chapter>();
+            for (Element element : chapters) {
+                Element e = element.children().first();
+                Log.d("t", e.attr("href"));
+                chMap.put(String.valueOf(ch), new Chapter(e.text(), e.attr("href")));
+                ch++;
+            }
+            Log.d("s", "setting text");
+            //descriptionFragment.setText(element.text());
+            //publishProgress(new ProgressUpdate(summary.first().text(), chMap));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new TitlePackage(summary, chMap);
+    }
+}
+
+class TitlePackage{
+    Elements elements;
+    Map<String, Chapter> chapterMap;
+
+    public TitlePackage(Elements elements,Map<String, Chapter> chapterMap){
+        this.elements = elements;
+        this.chapterMap = chapterMap;
+    }
+}

@@ -24,22 +24,24 @@ public class DirectorySetup {
         Log.d("mfoxsetup", "executing setup");
 
         try {
+            Log.d("mfoxsetup", "connecting");
             Document document = Jsoup.connect("http://mangafox.me/manga/").get();
+            Log.d("mfoxsetup", "connected");
             Elements li = document.getElementById("page").getElementsByClass("series_preview");
             Iterator i = li.iterator();
             int c = 0;
+            Log.d("mfoxsetup", "filling db");
             for(Element element : li){
                 Element title = element;
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, title.text());
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, title.attr("href"));
                 db.insert(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null, values);
-                Log.d("z", "value put and inserted");
                 c++;
                 if(c > 50){ //// FIXME testing purposes
                     break;
                 }
-
             }
+            Log.d("mfoxsetup", "filling db done");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,7 +49,33 @@ public class DirectorySetup {
     }
 
     public static void MangaHereSetup(ContentValues values, SQLiteDatabase db) {
-        Log.d("WIP", "Work in progress. Please turn back for now!");
+        //Log.d("WIP", "Work in progress. Please turn back for now!");
+
+        Log.d("mheresetup", "executing setup");
+
+        try {
+            Log.d("mheresetup", "connecting");
+            Document document = Jsoup.connect("http://mangahere.co/mangalist/").get();
+            Log.d("mheresetup", "connected");
+            Elements li = document.getElementsByClass("manga_info");
+            Iterator i = li.iterator();
+            int c = 0;
+            Log.d("mheresetup", "filling db");
+            for(Element element : li){
+                Element title = element;
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, title.attr("rel"));
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, title.attr("href"));
+                db.insert(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME, null, values);
+                c++;
+                if(c > 50){ //// FIXME testing purposes
+                    break;
+                }
+            }
+            Log.d("mheresetup", "filling db done");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
        // Document document = Jsoup.connect("").get(); //// FIXME: 3/19/2016
 
     }

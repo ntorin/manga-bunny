@@ -1,6 +1,7 @@
 package com.fruits.ntorin.mango;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,7 +54,6 @@ public class AppHome extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_home);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -61,11 +64,17 @@ public class AppHome extends AppCompatActivity
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(10);
+
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-
+        /*tabLayout.getTabAt(0).setIcon(imageResId[0]);
+        tabLayout.getTabAt(1).setIcon(imageResId[1]);
+        tabLayout.getTabAt(2).setIcon(imageResId[2]);
+        tabLayout.getTabAt(3).setIcon(imageResId[3]);
+        tabLayout.getTabAt(4).setIcon(imageResId[4]);*/
 
     }
 
@@ -154,7 +163,7 @@ public class AppHome extends AppCompatActivity
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
 
-            switch(position){
+            switch (position) {
                 case 0:
                     return DirectoryFragment.newInstance("", "");
                 case 1:
@@ -171,7 +180,7 @@ public class AppHome extends AppCompatActivity
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 5 total pages.
             return 5;
         }
 
@@ -191,5 +200,15 @@ public class AppHome extends AppCompatActivity
             }
             return null;
         }
-    }
+
+        }
+
+    private int[] imageResId = {
+            R.drawable.ic_action_search,
+            R.drawable.ic_menu_camera,
+            R.drawable.ic_menu_gallery,
+            R.drawable.ic_menu_send,
+            R.drawable.ic_menu_slideshow
+    };
+
 }
