@@ -7,28 +7,29 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link DescriptionFragment.OnFragmentInteractionListener} interface
+ * {@link DownloadsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link DescriptionFragment#newInstance} factory method to
+ * Use the {@link DownloadsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DescriptionFragment extends Fragment {
+public class DownloadsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private int mParam1;
+    private String mParam1;
+    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
-    public DescriptionFragment() {
+    public DownloadsFragment() {
         // Required empty public constructor
     }
 
@@ -36,14 +37,16 @@ public class DescriptionFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param section_number Parameter 1.
-     * @return A new instance of fragment DescriptionFragment.
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment DownloadsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DescriptionFragment newInstance(int section_number) {
-        DescriptionFragment fragment = new DescriptionFragment();
+    public static DownloadsFragment newInstance(String param1, String param2) {
+        DownloadsFragment fragment = new DownloadsFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, section_number);
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,7 +55,8 @@ public class DescriptionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getInt(ARG_SECTION_NUMBER);
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -60,9 +64,7 @@ public class DescriptionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_description_chapters, container, false);
-        TextView textView = (TextView) rootView.findViewById(R.id.description_section_label);
-        return rootView;
+        return inflater.inflate(R.layout.fragment_downloads, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -87,11 +89,6 @@ public class DescriptionFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public void setText(String text){
-        TextView textView = (TextView) this.getView().findViewById(R.id.description_section_label);
-        textView.setText(text);
     }
 
     /**

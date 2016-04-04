@@ -60,7 +60,7 @@ public class SiteSearch extends ListActivity{
         @Override
         protected Void doInBackground(String... params) {
             if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME)){
-                DirectorySetup.MangafoxSetup(values, db);
+                //DirectorySetup.MangafoxSetup(values, db);
             }else if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME)){
                 DirectorySetup.MangaHereSetup(values, db);
             }else if(params[0].equals(DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME)){
@@ -99,7 +99,7 @@ public class SiteSearch extends ListActivity{
         test.moveToPosition(position);
         String title = test.getString(test.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE));
         String href = test.getString(test.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF));
-        test.close();
+        //test.close();
         bundle.putString("title", title);
         bundle.putString("href", href);
         intent.putExtras(bundle);
@@ -108,7 +108,7 @@ public class SiteSearch extends ListActivity{
 
 }
 
-class DBAdapter extends CursorAdapter{
+/*class DBAdapter extends CursorAdapter{
 
     public DBAdapter(Context context, Cursor c, int flags) {
         super(context, c, 0);
@@ -129,4 +129,4 @@ class DBAdapter extends CursorAdapter{
         textView.setText(body);
         Log.d("v", "bind view called");
     }
-}
+}*/

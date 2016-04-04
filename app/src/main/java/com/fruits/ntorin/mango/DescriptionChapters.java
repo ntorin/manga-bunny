@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -17,9 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-
-import com.fruits.ntorin.mango.dummy.DummyContent;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,6 +24,9 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.fruits.ntorin.mango.DescriptionChaptersSetup.MangafoxTitleSetup;
+import static com.fruits.ntorin.mango.DescriptionChaptersSetup.MangahereTitleSetup;
 
 public class DescriptionChapters extends AppCompatActivity
         implements DescriptionFragment.OnFragmentInteractionListener,
@@ -70,7 +68,10 @@ public class DescriptionChapters extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+
+
         Intent intent = this.getIntent();
+        setTitle(intent.getStringExtra("title"));
         new AsyncFetchTitle(intent.getStringExtra("href")).execute();
 
     }
@@ -111,28 +112,19 @@ public class DescriptionChapters extends AppCompatActivity
         }
 
         @Override
-        protected Void doInBackground(Void... params) { //// FIXME: 3/15/2016 
-            try{
-                Document document = Jsoup.connect(href).get();
-                Log.d("c", "connected to " + href);
-                Elements summary = document.getElementsByClass("summary");
-                Elements chapters = document.getElementsByClass("tips"); // a class that's similar to DummyItem, but stores chapter info
-                int ch = 1;
-                chMap = new HashMap<String, Chapter>();
-                for (Element element : chapters){
-                    Log.d("t", element.attr("href"));
-                    chMap.put(String.valueOf(ch), new Chapter(element.text(), element.attr("href")));
-                    ch++;
-                }
-                Log.d("s", "setting text");
-                    //descriptionFragment.setText(element.text());
-                    publishProgress(new ProgressUpdate(summary.first().text(), chMap));
+        protected Void doInBackground(Void... params) { //// FIXME: 3/15/2016
+            Elements summary;
+            chMap = new HashMap<String, Chapter>();
+            TitlePackage titlePackage = MangahereTitleSetup(href, chMap);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            summary = titlePackage.elements;
+            chMap = titlePackage.chapterMap;
+
+            publishProgress(new ProgressUpdate(summary.first().text(), chMap));
+
             return null;
         }
+
 
         @Override
         protected void onProgressUpdate(final ProgressUpdate... progress){
@@ -153,6 +145,71 @@ public class DescriptionChapters extends AppCompatActivity
         }
     }
 
+    private class AsyncGetPages extends AsyncTask<Void, Void, Void>{
+
+        String href;
+
+        public AsyncGetPages(String href){
+            super();
+            this.href = href;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Elements pages = null;
+            String[] pageURLs = new String[0];
+            try {
+                Document document = Jsoup.connect(href).get();
+                Elements li = document.getElementsByAttributeValue("onchange", "change_page(this)");
+                pages = li.first().children();
+                Log.d("#pages", "" + (pages.size()));
+                //li = document.getElementsByAttributeValue("class", "btn next_page");
+                Log.d("nextpageurl", "" + li.first().attr("href"));
+                pageURLs = new String[pages.size()];
+                int i = 0;
+                for(Element option : pages){
+                    pageURLs[i] = option.attr("value");
+                    Log.d("getpages", option.attr("value"));
+                    i++;
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Intent intent = new Intent(DescriptionChapters.this, ChapterReader.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("href", href);
+            bundle.putStringArray("pageURLs", pageURLs);
+            bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here
+            intent.putExtras(bundle);
+
+            Log.d("toChapterReader", href);
+            startActivity(intent);
+
+
+            return null;
+        }
+
+        /*@Override
+        protected void onPostExecute(Void aVoid) {
+            runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                    Intent intent = new Intent(DescriptionChapters.this, ChapterReader.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("href", href);
+                    intent.putExtras(bundle);
+
+                    Log.d("toChapterReader", href);
+                    startActivity(intent);
+
+                }
+            });
+        }*/
+    }
+
     @Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -160,12 +217,15 @@ public class DescriptionChapters extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(Chapter item) {
-        Intent intent = new Intent(this, Reader.class);
+        /*Intent intent = new Intent(this, ChapterReader.class);
         Bundle bundle = new Bundle();
         bundle.putString("href", item.content);
-        intent.putExtras(bundle);
-        //startActivity(intent);
-        Log.d("a", item.content);
+        intent.putExtras(bundle);*/
+        Log.d("toChapterReader", "chapter pressed");
+        Log.d("toChapterReader", item.content);
+        new AsyncGetPages(item.content).execute();
+
+        /*startActivity(intent);*/
     }
 
     class ProgressUpdate{
