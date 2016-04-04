@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.fruits.ntorin.mango.DescriptionChapters$PlaceholderFragment">
+    tools:context=".title.DescriptionChapters$PlaceholderFragment">
 
     <TextView
         android:id="@+id/description_section_label"

@@ -12,28 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Home"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".PickSite" />
-        <activity android:name=".SiteSearch" />
         <activity
-            android:name=".ScrollingActivity"
-            android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".tabtest"
-            android:label="@string/title_activity_tabtest"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".DescriptionChapters"
+            android:name=".title.DescriptionChapters"
             android:label="@string/title_activity_description_chapters"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".AppHome"
+            android:name=".home.AppHome"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -43,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ChapterReader"
+            android:name=".reader.ChapterReader"
             android:label="@string/title_activity_chapter_reader"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

@@ -1,9 +1,8 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
 
 /**
  * Created by Ntori on 2/7/2016.

@@ -1,4 +1,4 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.title;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.fruits.ntorin.mango.reader.ChapterReader;
+import com.fruits.ntorin.mango.R;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,9 +27,6 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.fruits.ntorin.mango.DescriptionChaptersSetup.MangafoxTitleSetup;
-import static com.fruits.ntorin.mango.DescriptionChaptersSetup.MangahereTitleSetup;
 
 public class DescriptionChapters extends AppCompatActivity
         implements DescriptionFragment.OnFragmentInteractionListener,
@@ -115,7 +115,7 @@ public class DescriptionChapters extends AppCompatActivity
         protected Void doInBackground(Void... params) { //// FIXME: 3/15/2016
             Elements summary;
             chMap = new HashMap<String, Chapter>();
-            TitlePackage titlePackage = MangahereTitleSetup(href, chMap);
+            TitlePackage titlePackage = DescriptionChaptersSetup.MangahereTitleSetup(href, chMap);
 
             summary = titlePackage.elements;
             chMap = titlePackage.chapterMap;

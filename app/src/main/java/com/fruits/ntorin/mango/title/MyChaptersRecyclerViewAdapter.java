@@ -1,16 +1,15 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.title;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.fruits.ntorin.mango.ChaptersFragment.OnListFragmentInteractionListener;
+import com.fruits.ntorin.mango.R;
+import com.fruits.ntorin.mango.title.ChaptersFragment.OnListFragmentInteractionListener;
 import com.fruits.ntorin.mango.dummy.DummyContent.DummyItem;
 
-import java.util.List;
 import java.util.Map;
 
 /**

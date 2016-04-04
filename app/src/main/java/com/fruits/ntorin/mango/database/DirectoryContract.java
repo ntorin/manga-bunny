@@ -1,4 +1,4 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.database;
 
 import android.provider.BaseColumns;
 

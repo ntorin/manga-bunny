@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.fruits.ntorin.mango.ChapterReader"
+    tools:context=".reader.ChapterReader"
     android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout

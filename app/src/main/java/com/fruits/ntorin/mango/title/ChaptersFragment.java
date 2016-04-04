@@ -1,4 +1,4 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.title;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,10 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.fruits.ntorin.mango.dummy.DummyContent;
-import com.fruits.ntorin.mango.dummy.DummyContent.DummyItem;
+import com.fruits.ntorin.mango.R;
 
-import java.util.List;
 import java.util.Map;
 
 /**

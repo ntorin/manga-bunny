@@ -1,4 +1,4 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.title;
 
 /**
  * Created by Ntori on 3/16/2016.

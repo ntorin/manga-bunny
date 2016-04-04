@@ -1,4 +1,4 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.title;
 
 import android.util.Log;
 
@@ -65,12 +65,3 @@ public class DescriptionChaptersSetup {
     }
 }
 
-class TitlePackage{
-    Elements elements;
-    Map<String, Chapter> chapterMap;
-
-    public TitlePackage(Elements elements,Map<String, Chapter> chapterMap){
-        this.elements = elements;
-        this.chapterMap = chapterMap;
-    }
-}

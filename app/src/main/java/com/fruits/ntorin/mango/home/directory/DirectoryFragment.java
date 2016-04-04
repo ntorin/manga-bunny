@@ -1,19 +1,17 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.home.directory;
 
-import android.app.ListActivity;
-import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,11 +21,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.zip.Inflater;
+import com.fruits.ntorin.mango.title.DescriptionChapters;
+import com.fruits.ntorin.mango.R;
+import com.fruits.ntorin.mango.database.DirectoryContract;
+import com.fruits.ntorin.mango.database.DirectoryDbHelper;
 
 
 /**
@@ -56,6 +58,7 @@ public class DirectoryFragment extends Fragment {
     DirectoryDbHelper ddbHelper;
     private View mView;
     private LayoutInflater mInflater;
+    private EditText mFilterText;
 
     public DirectoryFragment() {
         // Required empty public constructor
@@ -91,7 +94,8 @@ public class DirectoryFragment extends Fragment {
         }
 
         setHasOptionsMenu(true);
-        new AsyncFetchDirectory(this).execute("Mangahere");
+        Log.d("DirectoryFragment", "onCreate run Async ");
+        new AsyncFetchDirectory(this).execute(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME);
     }
 
     @Override
@@ -112,7 +116,11 @@ public class DirectoryFragment extends Fragment {
             case R.id.action_settings:
                 return true;
 
-            case R.id.action_search_settings:
+            case R.id.action_search:
+
+
+
+
                 return true;
 
             case R.id.list_view:
@@ -151,6 +159,8 @@ public class DirectoryFragment extends Fragment {
         mInflater = inflater;
         mView = inflater.inflate(R.layout.fragment_directory, container, false);
         absListView = (AbsListView) mView.findViewById(R.id.directory_grid);
+        mFilterText = (EditText) mView.findViewById(R.id.editText);
+
         setListener();
 
         return mView;
@@ -235,6 +245,32 @@ public class DirectoryFragment extends Fragment {
 
             directoryAdapter = new DirectoryAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
             simpleCursorAdapter = new SimpleCursorAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
+            /*simpleCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+                @Override
+                public Cursor runQuery(CharSequence constraint) {
+                    return db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + " FROM " +
+                            tableName[0] + " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
+                            + " LIKE '%" + constraint.toString() + "%'", null);
+                }
+            });
+            mFilterText.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    simpleCursorAdapter.getFilter().filter(s);
+                    simpleCursorAdapter.notifyDataSetChanged();
+                }
+            });*/
 
             if(absListView.equals(mView.findViewById(R.id.directory_grid))) {
                 absListView.setAdapter(directoryAdapter);
@@ -271,6 +307,7 @@ public class DirectoryFragment extends Fragment {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup)
         {
+            Log.d("DirectoryAdapter", "getView started");
             View v = view;
             ImageView picture;
             TextView name;
@@ -282,6 +319,7 @@ public class DirectoryFragment extends Fragment {
                 v.setTag(R.id.picture, v.findViewById(R.id.picture));
                 v.setTag(R.id.text, v.findViewById(R.id.text));
             }
+
 
             picture = (ImageView)v.getTag(R.id.picture);
             name = (TextView)v.getTag(R.id.text);

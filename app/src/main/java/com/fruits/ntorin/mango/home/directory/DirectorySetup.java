@@ -1,8 +1,10 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.home.directory;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.fruits.ntorin.mango.database.DirectoryContract;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

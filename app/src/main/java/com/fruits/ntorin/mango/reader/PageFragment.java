@@ -1,7 +1,6 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.reader;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -14,10 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.fruits.ntorin.mango.R;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -26,7 +26,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 
@@ -86,7 +85,6 @@ public class PageFragment extends Fragment {
         }
         String href = getArguments().getString("href");
         new AsyncFetchPage().execute(href);
-        //new AsyncFetchPage(ARG_PARAM1).execute();
     }
 
     @Override
@@ -161,23 +159,6 @@ public class PageFragment extends Fragment {
             Log.d("pagefragment", "onPostExecute finished");
         }
     }
-
-
-
-    /*public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            // Log exception
-            return null;
-        }
-    }*/
 
     public static Bitmap getBitmapFromURL(String url) {
         Bitmap bitmap = null;
