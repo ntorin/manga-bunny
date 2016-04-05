@@ -221,6 +221,8 @@ public class DirectoryFragment extends Fragment {
 
         @Override
         protected Void doInBackground(String... params) {
+            publishProgress(params[0]);
+
             if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME)){
                 DirectorySetup.MangafoxSetup(db);
             }else if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME)){
@@ -245,7 +247,7 @@ public class DirectoryFragment extends Fragment {
 
             directoryAdapter = new DirectoryAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
             simpleCursorAdapter = new SimpleCursorAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
-            /*simpleCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
                 @Override
                 public Cursor runQuery(CharSequence constraint) {
                     return db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
@@ -254,7 +256,9 @@ public class DirectoryFragment extends Fragment {
                             tableName[0] + " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
                             + " LIKE '%" + constraint.toString() + "%'", null);
                 }
-            });
+            };
+            directoryAdapter.setFilterQueryProvider(filterQueryProvider);
+            simpleCursorAdapter.setFilterQueryProvider(filterQueryProvider);
             mFilterText.addTextChangedListener(new TextWatcher() {
 
                 @Override
@@ -268,9 +272,11 @@ public class DirectoryFragment extends Fragment {
                 @Override
                 public void afterTextChanged(Editable s) {
                     simpleCursorAdapter.getFilter().filter(s);
+                    directoryAdapter.getFilter().filter(s);
                     simpleCursorAdapter.notifyDataSetChanged();
+                    directoryAdapter.notifyDataSetChanged();
                 }
-            });*/
+            });
 
             if(absListView.equals(mView.findViewById(R.id.directory_grid))) {
                 absListView.setAdapter(directoryAdapter);
@@ -307,7 +313,7 @@ public class DirectoryFragment extends Fragment {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup)
         {
-            Log.d("DirectoryAdapter", "getView started");
+            //Log.d("DirectoryAdapter", "getView started");
             View v = view;
             ImageView picture;
             TextView name;

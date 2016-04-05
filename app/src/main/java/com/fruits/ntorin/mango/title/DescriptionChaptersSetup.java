@@ -1,5 +1,6 @@
 package com.fruits.ntorin.mango.title;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -10,6 +11,8 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.fruits.ntorin.mango.reader.PageFragment.getBitmapFromURL;
 
 /**
  * Created by Ntori on 4/3/2016.
@@ -36,11 +39,12 @@ public class DescriptionChaptersSetup {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new TitlePackage(summary, chMap);
+        return new TitlePackage(summary, chMap, null); //// TODO: 4/5/2016 get the image
     }
 
-    public static TitlePackage MangahereTitleSetup(String href, Map<String, Chapter> chMap){
+    public static TitlePackage MangahereTitleSetup(String href, Map<String, Chapter> chMap) {
         Elements summary = new Elements();
+        Bitmap cover = null;
         try {
             Document document = Jsoup.connect(href).get();
             Log.d("c", "connected to " + href);
@@ -54,6 +58,8 @@ public class DescriptionChaptersSetup {
                 chMap.put(String.valueOf(ch), new Chapter(e.text(), e.attr("href")));
                 ch++;
             }
+            String coverURL = document.getElementsByClass("manga_detail_top").first().getElementsByClass("img").first().attr("src");
+            cover = getBitmapFromURL(coverURL);
             Log.d("s", "setting text");
             //descriptionFragment.setText(element.text());
             //publishProgress(new ProgressUpdate(summary.first().text(), chMap));
@@ -61,7 +67,7 @@ public class DescriptionChaptersSetup {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new TitlePackage(summary, chMap);
+        return new TitlePackage(summary, chMap, cover);
     }
 }
 

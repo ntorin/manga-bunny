@@ -1,6 +1,7 @@
 package com.fruits.ntorin.mango.title;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
@@ -115,12 +116,14 @@ public class DescriptionChapters extends AppCompatActivity
         protected Void doInBackground(Void... params) { //// FIXME: 3/15/2016
             Elements summary;
             chMap = new HashMap<String, Chapter>();
+            Bitmap cover;
             TitlePackage titlePackage = DescriptionChaptersSetup.MangahereTitleSetup(href, chMap);
 
             summary = titlePackage.elements;
             chMap = titlePackage.chapterMap;
+            cover = titlePackage.bitmap;
 
-            publishProgress(new ProgressUpdate(summary.first().text(), chMap));
+            publishProgress(new ProgressUpdate(summary.first().text(), chMap, cover));
 
             return null;
         }
@@ -132,6 +135,7 @@ public class DescriptionChapters extends AppCompatActivity
                 @Override
                 public void run(){
                     descriptionFragment.setText(progress[0].description);
+                    descriptionFragment.setCover(progress[0].cover);
                     Log.d("s", "set text");
                     chaptersFragment.setAdapter(progress[0].map);
 
@@ -231,10 +235,12 @@ public class DescriptionChapters extends AppCompatActivity
     class ProgressUpdate{
         public final String description;
         public final Map<String, Chapter> map;
+        public Bitmap cover;
 
-        public ProgressUpdate(String description, Map<String, Chapter> map){
+        public ProgressUpdate(String description, Map<String, Chapter> map, Bitmap cover){ //// TODO: 4/5/2016 can be changed to a TitlePackage
             this.description = description;
             this.map = map;
+            this.cover = cover;
         }
 
     }

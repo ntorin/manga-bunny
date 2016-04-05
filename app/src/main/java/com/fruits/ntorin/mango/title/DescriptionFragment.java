@@ -1,12 +1,14 @@
 package com.fruits.ntorin.mango.title;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fruits.ntorin.mango.R;
@@ -29,6 +31,7 @@ public class DescriptionFragment extends Fragment {
     private int mParam1;
 
     private OnFragmentInteractionListener mListener;
+    private Bitmap mTitleCover;
 
     public DescriptionFragment() {
         // Required empty public constructor
@@ -94,6 +97,11 @@ public class DescriptionFragment extends Fragment {
     public void setText(String text){
         TextView textView = (TextView) this.getView().findViewById(R.id.description_section_label);
         textView.setText(text);
+    }
+
+    public void setCover(Bitmap cover){
+        ImageView imageView = (ImageView) this.getView().findViewById(R.id.description_title_cover);
+        imageView.setImageBitmap(cover);
     }
 
     /**

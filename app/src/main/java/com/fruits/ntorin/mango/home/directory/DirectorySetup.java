@@ -37,6 +37,7 @@ public class DirectorySetup {
                 Element title = element;
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, title.text());
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, title.attr("href"));
+                db.delete(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null, null);
                 db.insert(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null, values);
                 c++;
                 if(c > 50){ //// FIXME testing purposes
@@ -63,6 +64,7 @@ public class DirectorySetup {
             Iterator i = li.iterator();
             int c = 0;
             Log.d("mheresetup", "filling db");
+            db.delete(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME, null, null); //// FIXME: 4/5/2016 potential issues here if connection is lost?
             for(Element element : li){
                 Element title = element;
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, title.attr("rel"));
