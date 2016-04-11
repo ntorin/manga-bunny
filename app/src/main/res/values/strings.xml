@@ -176,4 +176,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="title_activity_chapter_reader">ChapterReader</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
 </resources>

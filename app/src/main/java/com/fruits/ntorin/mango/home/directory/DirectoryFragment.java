@@ -177,9 +177,11 @@ public class DirectoryFragment extends Fragment {
                 cursor.moveToPosition(position);
                 String title = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE));
                 String href = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF));
+                String cover = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER));
                 //test.close();
                 bundle.putString("title", title);
                 bundle.putString("href", href);
+                bundle.putString("cover", cover);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -226,7 +228,7 @@ public class DirectoryFragment extends Fragment {
             if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME)){
                 DirectorySetup.MangafoxSetup(db);
             }else if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME)){
-                DirectorySetup.MangaHereSetup(values, db);
+                DirectorySetup.MangaHereSetup(values, db, getContext());
             }else if(params[0].equals(DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME)){
                 DirectorySetup.BatotoSetup(values, db);
             }
@@ -241,7 +243,8 @@ public class DirectoryFragment extends Fragment {
             int[] to = {R.id.site_search_content};
             Cursor selectQuery = db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
                     DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
-                    DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + " FROM " +
+                    DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
+                    DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
                     tableName[0], null);
 
 
@@ -252,7 +255,8 @@ public class DirectoryFragment extends Fragment {
                 public Cursor runQuery(CharSequence constraint) {
                     return db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
                             DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
-                            DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + " FROM " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
                             tableName[0] + " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
                             + " LIKE '%" + constraint.toString() + "%'", null);
                 }
@@ -332,8 +336,9 @@ public class DirectoryFragment extends Fragment {
             cursor = (Cursor) getItem(i);
 
             //Item item = (Item)getItem(i);
+            Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER)));
 
-            //picture.setImageResource(item.drawableId);
+            picture.setImageURI(uri);
             //name.setText(item.name);
             name.setText(cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE)));
 

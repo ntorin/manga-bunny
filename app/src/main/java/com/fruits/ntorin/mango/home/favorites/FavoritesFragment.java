@@ -1,14 +1,35 @@
 package com.fruits.ntorin.mango.home.favorites;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.FilterQueryProvider;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.fruits.ntorin.mango.title.DescriptionChapters;
 import com.fruits.ntorin.mango.R;
+import com.fruits.ntorin.mango.database.DirectoryContract;
+import com.fruits.ntorin.mango.database.DirectoryDbHelper;
 
 
 /**
@@ -30,6 +51,14 @@ public class FavoritesFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    AbsListView absListView;
+
+    SimpleCursorAdapter simpleCursorAdapter;
+    FavoritesAdapter favoritesAdapter;
+    DirectoryDbHelper ddbHelper;
+    private View mView;
+    private LayoutInflater mInflater;
+    private EditText mFilterText;
 
     public FavoritesFragment() {
         // Required empty public constructor
@@ -56,19 +85,102 @@ public class FavoritesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ddbHelper = new DirectoryDbHelper(this.getContext());
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        setHasOptionsMenu(true);
+        Log.d("FavoritesFragment", "onCreate run Async ");
+        new AsyncFetchDirectory(this).execute(DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME);
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_home, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        Intent intent;
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+
+            case R.id.action_search:
+                return true;
+
+            case R.id.list_view:
+                mView.findViewById(R.id.directory_grid).setVisibility(View.GONE);
+                absListView = (AbsListView) mView.findViewById(R.id.directory_list);
+                if(absListView.getOnItemClickListener() == null){
+                    setListener();
+                }
+                absListView.setAdapter(simpleCursorAdapter);
+                mView.findViewById(R.id.directory_list).setVisibility(View.VISIBLE);
+                Log.d("tolist", "request list");
+                return true;
+
+            case R.id.catalog_view:
+                mView.findViewById(R.id.directory_list).setVisibility(View.GONE);
+                absListView = (AbsListView) mView.findViewById(R.id.directory_grid);
+                if(absListView.getOnItemClickListener() == null){
+                    setListener();
+                }
+                absListView.setAdapter(favoritesAdapter);
+                mView.findViewById(R.id.directory_grid).setVisibility(View.VISIBLE);
+                Log.d("togrid", "request grid");
+                return true;
+
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites, container, false);
+        mInflater = inflater;
+        mView = inflater.inflate(R.layout.fragment_directory, container, false);
+        absListView = (AbsListView) mView.findViewById(R.id.directory_grid);
+        mFilterText = (EditText) mView.findViewById(R.id.editText);
+
+        setListener();
+
+        return mView;
     }
 
+
+    public void setListener(){
+        absListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> l, View v, int position, long id) {
+                Intent intent = new Intent(FavoritesFragment.this.getContext(), DescriptionChapters.class);
+                Bundle bundle = new Bundle();
+                Cursor cursor = (Cursor) simpleCursorAdapter.getCursor();
+                cursor.moveToPosition(position);
+                String title = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE));
+                String href = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF));
+                //test.close();
+                bundle.putString("title", title);
+                bundle.putString("href", href);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
+    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -93,6 +205,76 @@ public class FavoritesFragment extends Fragment {
         mListener = null;
     }
 
+    private class AsyncFetchDirectory extends AsyncTask<String, String, Void> {
+
+        ContentValues values = new ContentValues();
+        SQLiteDatabase db = ddbHelper.getWritableDatabase();
+        Fragment fragment;
+
+        public AsyncFetchDirectory(Fragment a){
+            fragment = a;
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            publishProgress(params[0]);
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(final String... tableName) {
+            String[] from = {DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE};
+            int[] to = {R.id.site_search_content};
+            Cursor selectQuery = db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
+                    DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
+                    DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
+                    DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
+                    tableName[0], null);
+
+
+            favoritesAdapter = new FavoritesAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
+            simpleCursorAdapter = new SimpleCursorAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
+            FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
+                @Override
+                public Cursor runQuery(CharSequence constraint) {
+                    return db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
+                            DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
+                            tableName[0] + " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
+                            + " LIKE '%" + constraint.toString() + "%'", null);
+                }
+            };
+            favoritesAdapter.setFilterQueryProvider(filterQueryProvider);
+            simpleCursorAdapter.setFilterQueryProvider(filterQueryProvider);
+            mFilterText.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    simpleCursorAdapter.getFilter().filter(s);
+                    favoritesAdapter.getFilter().filter(s);
+                    simpleCursorAdapter.notifyDataSetChanged();
+                    favoritesAdapter.notifyDataSetChanged();
+                }
+            });
+
+            if(absListView.equals(mView.findViewById(R.id.directory_grid))) {
+                absListView.setAdapter(favoritesAdapter);
+            }else{
+                absListView.setAdapter(simpleCursorAdapter);
+            }
+            Log.d("c", "approached notify");
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -107,4 +289,50 @@ public class FavoritesFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
+
+    class FavoritesAdapter extends SimpleCursorAdapter{
+
+        public FavoritesAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+            super(context, layout, c, from, to, flags);
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup)
+        {
+            //Log.d("favoritesAdapter", "getView started");
+            View v = view;
+            ImageView picture;
+            TextView name;
+            Cursor cursor;
+
+            if(v == null)
+            {
+                v = mInflater.inflate(R.layout.gridview_item, viewGroup, false);
+                v.setTag(R.id.picture, v.findViewById(R.id.picture));
+                v.setTag(R.id.text, v.findViewById(R.id.text));
+            }
+
+
+            picture = (ImageView)v.getTag(R.id.picture);
+            name = (TextView)v.getTag(R.id.text);
+            cursor = (Cursor) getItem(i);
+
+            //Item item = (Item)getItem(i);
+
+            //Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER))); //// FIXME: 4/11/2016  android.database.StaleDataException: Attempting to access a closed CursorWindow.Most probable cause: cursor is deactivated prior to calling this method.
+
+
+            //picture.setImageURI(uri);
+            //name.setText(item.name);
+            name.setText(cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE)));
+
+            return v;
+        }
+
+    }
+
 }
+
+

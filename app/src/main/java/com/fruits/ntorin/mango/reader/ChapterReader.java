@@ -1,6 +1,8 @@
 package com.fruits.ntorin.mango.reader;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -65,6 +67,8 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 0, 255, 0)));
+        getSupportActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
