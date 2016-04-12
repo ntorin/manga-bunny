@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.fruits.ntorin.mango.FullscreenActivity;
 import com.fruits.ntorin.mango.home.directory.DirectoryFragment;
 import com.fruits.ntorin.mango.home.downloads.DownloadsFragment;
 import com.fruits.ntorin.mango.home.explore.ExploreFragment;
@@ -95,7 +96,7 @@ public class AppHome extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, Settings.class);
+            Intent intent = new Intent(this, FullscreenActivity.class);
             startActivity(intent);
             return true;
         }
