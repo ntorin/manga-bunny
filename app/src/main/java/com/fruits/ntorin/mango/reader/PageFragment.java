@@ -1,9 +1,7 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.reader;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,20 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.fruits.ntorin.mango.R;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
+import static com.fruits.ntorin.mango.BitmapFunctions.getBitmapFromURL;
 
 
 /**
@@ -50,7 +43,6 @@ public class PageFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private ImageView mImageView;
-    private static final int IO_BUFFER_SIZE = 4 * 1024;
     private Bitmap mBitmap;
     private Bitmap bitmap;
 
@@ -86,7 +78,6 @@ public class PageFragment extends Fragment {
         }
         String href = getArguments().getString("href");
         new AsyncFetchPage().execute(href);
-        //new AsyncFetchPage(ARG_PARAM1).execute();
     }
 
     @Override
@@ -163,78 +154,6 @@ public class PageFragment extends Fragment {
     }
 
 
-
-    /*public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            // Log exception
-            return null;
-        }
-    }*/
-
-    public static Bitmap getBitmapFromURL(String url) {
-        Bitmap bitmap = null;
-        InputStream in = null;
-        BufferedOutputStream out = null;
-
-        try {
-            in = new BufferedInputStream(new URL(url).openStream(), IO_BUFFER_SIZE);
-
-            final ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
-            out = new BufferedOutputStream(dataStream, IO_BUFFER_SIZE);
-            copy(in, out);
-            out.flush();
-
-            final byte[] data = dataStream.toByteArray();
-            bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-        } catch (IOException e) {
-            Log.e("e", "Could not load Bitmap from: " + url);
-        } finally {
-            closeStream(in);
-            closeStream(out);
-        }
-
-        return bitmap;
-    }
-
-    /**
-     * Closes the specified stream.
-     *
-     * @param stream The stream to close.
-     */
-    private static void closeStream(Closeable stream) {
-        if (stream != null) {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                android.util.Log.e("e", "Could not close stream", e);
-            }
-        }
-    }
-
-    /**
-     * Copy the content of the input stream into the output stream, using a
-     * temporary byte array buffer whose size is defined by
-     * {@link #IO_BUFFER_SIZE}.
-     *
-     * @param in The input stream to copy from.
-     * @param out The output stream to copy to.
-     * @throws IOException If any error occurs during the copy.
-     */
-    private static void copy(InputStream in, OutputStream out) throws IOException {
-        byte[] b = new byte[IO_BUFFER_SIZE];
-        int read;
-        while ((read = in.read(b)) != -1) {
-            out.write(b, 0, read);
-        }
-    }
 
 
     @Override

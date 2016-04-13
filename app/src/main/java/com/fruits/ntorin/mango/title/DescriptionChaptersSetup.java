@@ -1,5 +1,6 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.title;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.fruits.ntorin.mango.BitmapFunctions.getBitmapFromURL;
+
 /**
  * Created by Ntori on 4/3/2016.
  */
@@ -21,7 +24,7 @@ public class DescriptionChaptersSetup {
             Document document = Jsoup.connect(href).get();
             Log.d("c", "connected to " + href);
             summary = document.getElementsByClass("summary");
-            Elements chapters = document.getElementsByClass("tips"); // a class that's similar to DummyItem, but stores chapter info
+            Elements chapters = document.getElementsByClass("tips");
             int ch = 1;
             chMap = new HashMap<String, Chapter>();
             for (Element element : chapters) {
@@ -36,24 +39,27 @@ public class DescriptionChaptersSetup {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new TitlePackage(summary, chMap);
+        return new TitlePackage(summary, chMap, null); //// TODO: 4/5/2016 get the image
     }
 
-    public static TitlePackage MangahereTitleSetup(String href, Map<String, Chapter> chMap){
+    public static TitlePackage MangahereTitleSetup(String href, Map<String, Chapter> chMap) {
         Elements summary = new Elements();
+        Bitmap cover = null;
         try {
             Document document = Jsoup.connect(href).get();
             Log.d("c", "connected to " + href);
-            summary.add(document.getElementById("show"));
-            Elements chapters = document.getElementsByClass("detail_list").first().getElementsByClass("left"); // a class that's similar to DummyItem, but stores chapter info
+            summary.add(document.getElementById("show")); // FIXME: 4/9/2016  "Show less" appears in the description.
+            Elements chapters = document.getElementsByClass("detail_list").first().getElementsByClass("left");
             int ch = 1;
             chMap = new HashMap<String, Chapter>();
             for (Element element : chapters) {
                 Element e = element.children().first();
                 Log.d("t", e.attr("href"));
-                chMap.put(String.valueOf(ch), new Chapter(e.text(), e.attr("href")));
+                chMap.put(String.valueOf(ch), new Chapter(e.ownText(), e.attr("href")));
                 ch++;
             }
+            String coverURL = document.getElementsByClass("manga_detail_top").first().getElementsByClass("img").first().attr("src");
+            cover = getBitmapFromURL(coverURL);
             Log.d("s", "setting text");
             //descriptionFragment.setText(element.text());
             //publishProgress(new ProgressUpdate(summary.first().text(), chMap));
@@ -61,16 +67,7 @@ public class DescriptionChaptersSetup {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new TitlePackage(summary, chMap);
+        return new TitlePackage(summary, chMap, cover);
     }
 }
 
-class TitlePackage{
-    Elements elements;
-    Map<String, Chapter> chapterMap;
-
-    public TitlePackage(Elements elements,Map<String, Chapter> chapterMap){
-        this.elements = elements;
-        this.chapterMap = chapterMap;
-    }
-}

@@ -2,9 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fruits.ntorin.mango.DirectoryFragment">
+    tools:context=".home.directory.DirectoryFragment"
+    android:paddingBottom="55dp">
 
-    <!-- TODO: Update blank fragment layout
+    <!--
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent" /> -->
@@ -12,7 +13,10 @@
     <ListView
         android:id="@+id/directory_list"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></ListView>
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText"
+        android:layout_alignLeft="@+id/editText"
+        android:layout_alignStart="@+id/editText"></ListView>
 
     <GridView
         android:id="@+id/directory_grid"
@@ -21,5 +25,10 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:numColumns="3"></GridView>
+
+     <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </FrameLayout>

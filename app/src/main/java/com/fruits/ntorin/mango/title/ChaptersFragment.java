@@ -1,4 +1,4 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.title;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,10 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.fruits.ntorin.mango.dummy.DummyContent;
-import com.fruits.ntorin.mango.dummy.DummyContent.DummyItem;
+import com.fruits.ntorin.mango.R;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,11 +51,11 @@ public class ChaptersFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("mcol", "" + mColumnCount);
+        //Log.d("mcol", "" + mColumnCount);
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-        Log.d("mcol", "" + mColumnCount);
+        //Log.d("mcol", "" + mColumnCount);
     }
 
     @Override
@@ -70,10 +68,8 @@ public class ChaptersFragment extends Fragment {
             Context context = view.getContext();
             mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                Log.d("a", "less than 2");
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
-                Log.d("b", "more than 1");
                 mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             //mRecyclerView.setAdapter(new MyChaptersRecyclerViewAdapter(DummyContent.ITEM_MAP, mListener));

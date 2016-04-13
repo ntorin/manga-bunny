@@ -1,6 +1,10 @@
-package com.fruits.ntorin.mango;
+package com.fruits.ntorin.mango.title;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
@@ -15,18 +19,31 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import com.fruits.ntorin.mango.database.DirectoryContract;
+import com.fruits.ntorin.mango.database.DirectoryDbHelper;
+import com.fruits.ntorin.mango.home.history.HistoryFragment;
+import com.fruits.ntorin.mango.reader.ChapterReader;
+import com.fruits.ntorin.mango.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-
-import static com.fruits.ntorin.mango.DescriptionChaptersSetup.MangafoxTitleSetup;
-import static com.fruits.ntorin.mango.DescriptionChaptersSetup.MangahereTitleSetup;
 
 public class DescriptionChapters extends AppCompatActivity
         implements DescriptionFragment.OnFragmentInteractionListener,
@@ -49,6 +66,7 @@ public class DescriptionChapters extends AppCompatActivity
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Map<String, Chapter> mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +85,6 @@ public class DescriptionChapters extends AppCompatActivity
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-
 
         Intent intent = this.getIntent();
         setTitle(intent.getStringExtra("title"));
@@ -115,12 +131,18 @@ public class DescriptionChapters extends AppCompatActivity
         protected Void doInBackground(Void... params) { //// FIXME: 3/15/2016
             Elements summary;
             chMap = new HashMap<String, Chapter>();
-            TitlePackage titlePackage = MangahereTitleSetup(href, chMap);
+            Uri cover;
+            TitlePackage titlePackage = DescriptionChaptersSetup.MangahereTitleSetup(href, chMap);
 
             summary = titlePackage.elements;
             chMap = titlePackage.chapterMap;
-
-            publishProgress(new ProgressUpdate(summary.first().text(), chMap));
+            Log.d("check", "" + getIntent().getStringExtra("cover"));
+            cover = Uri.parse(getIntent().getStringExtra("cover"));
+            String summaryText = "";
+            if (summary != null) {
+                summaryText = summary.first().text();
+            }
+            publishProgress(new ProgressUpdate(summaryText, chMap, cover));
 
             return null;
         }
@@ -128,12 +150,14 @@ public class DescriptionChapters extends AppCompatActivity
 
         @Override
         protected void onProgressUpdate(final ProgressUpdate... progress){
-            runOnUiThread(new Runnable(){
+            runOnUiThread(new Runnable() {
                 @Override
-                public void run(){
+                public void run() {
                     descriptionFragment.setText(progress[0].description);
+                    descriptionFragment.setCover(progress[0].cover);
                     Log.d("s", "set text");
                     chaptersFragment.setAdapter(progress[0].map);
+                    mMap = progress[0].map;
 
                 }
             });
@@ -147,11 +171,11 @@ public class DescriptionChapters extends AppCompatActivity
 
     private class AsyncGetPages extends AsyncTask<Void, Void, Void>{
 
-        String href;
+        Chapter item;
 
-        public AsyncGetPages(String href){
+        public AsyncGetPages(Chapter item){
             super();
-            this.href = href;
+            this.item = item;
         }
 
         @Override
@@ -159,7 +183,7 @@ public class DescriptionChapters extends AppCompatActivity
             Elements pages = null;
             String[] pageURLs = new String[0];
             try {
-                Document document = Jsoup.connect(href).get();
+                Document document = Jsoup.connect(item.content).get();
                 Elements li = document.getElementsByAttributeValue("onchange", "change_page(this)");
                 pages = li.first().children();
                 Log.d("#pages", "" + (pages.size()));
@@ -178,14 +202,26 @@ public class DescriptionChapters extends AppCompatActivity
                 e.printStackTrace();
             }
 
+
+            ContentValues values = new ContentValues();
+            DirectoryDbHelper dbHelper = new DirectoryDbHelper(getBaseContext());
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, item.id);
+            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, item.content);
+            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_DATE, getDateTime());
+            db.delete(DirectoryContract.DirectoryEntry.HISTORY_TABLE_NAME,
+                    DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + item.content + "\'", null);
+            db.insert(DirectoryContract.DirectoryEntry.HISTORY_TABLE_NAME, null, values);
+            Log.d("DescriptionChapters", "history time " + getDateTime());
+
             Intent intent = new Intent(DescriptionChapters.this, ChapterReader.class);
             Bundle bundle = new Bundle();
-            bundle.putString("href", href);
+            bundle.putString("href", item.content);
             bundle.putStringArray("pageURLs", pageURLs);
             bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here
             intent.putExtras(bundle);
 
-            Log.d("toChapterReader", href);
+            Log.d("toChapterReader", item.content);
             startActivity(intent);
 
 
@@ -217,13 +253,14 @@ public class DescriptionChapters extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(Chapter item) {
+
         /*Intent intent = new Intent(this, ChapterReader.class);
         Bundle bundle = new Bundle();
         bundle.putString("href", item.content);
         intent.putExtras(bundle);*/
         Log.d("toChapterReader", "chapter pressed");
-        Log.d("toChapterReader", item.content);
-        new AsyncGetPages(item.content).execute();
+        Log.d("toChapterReader", item.content + " " + item.id);
+        new AsyncGetPages(item).execute();
 
         /*startActivity(intent);*/
     }
@@ -231,12 +268,71 @@ public class DescriptionChapters extends AppCompatActivity
     class ProgressUpdate{
         public final String description;
         public final Map<String, Chapter> map;
+        public Uri cover;
 
-        public ProgressUpdate(String description, Map<String, Chapter> map){
+        public ProgressUpdate(String description, Map<String, Chapter> map, Uri cover){ //// TODO: 4/5/2016 can be changed to a TitlePackage
             this.description = description;
             this.map = map;
+            this.cover = cover;
         }
 
+    }
+
+    public void AddToFavorites(View view) {
+        Log.d("DescriptionChapters", "AddToFavorites");
+        Intent intent = this.getIntent();
+        DirectoryDbHelper dbHelper = new DirectoryDbHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        String title = intent.getStringExtra("title");
+        String href = intent.getStringExtra("href");
+
+        db.execSQL("INSERT INTO " + DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME +
+                " SELECT *, NULL FROM " + DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME +
+                " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + href + "\'");
+        ArrayList<Chapter> chapters = new ArrayList<Chapter>();
+        int n = 0;
+        for (Chapter chapter : mMap.values()) {
+            chapters.add(n, chapter);
+            n++;
+        }
+        String chaptersURI = null;
+        try {
+            FileOutputStream fos = openFileOutput(title + "en", Context.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(chapters);
+            chaptersURI = getBaseContext().getFileStreamPath(title + "en").toURI().toString();
+            oos.close();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_CHAPTERS, chaptersURI);
+        db.update(DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME, values,
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + href + "\'", null);
+        //db.insert(DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME, null, values);
+    }
+
+    public void RemoveFromFavorites(View view){
+        Log.d("DescriptionChapters", "RemoveFromFavorites");
+        Intent intent = this.getIntent();
+        DirectoryDbHelper dbHelper = new DirectoryDbHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String href = intent.getStringExtra("href");
+
+        db.delete(DirectoryContract.DirectoryEntry.HISTORY_TABLE_NAME,
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + href + "\'", null);
+    }
+
+    private String getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
     /**
