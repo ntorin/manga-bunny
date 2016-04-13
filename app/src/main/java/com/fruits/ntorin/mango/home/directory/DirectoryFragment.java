@@ -113,7 +113,8 @@ public class DirectoryFragment extends Fragment {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_settings:
+            case R.id.action_search_settings:
+                new AsyncUpdateDirectory().execute();
                 return true;
 
             case R.id.action_search:
@@ -211,6 +212,15 @@ public class DirectoryFragment extends Fragment {
         mListener = null;
     }
 
+    private class AsyncUpdateDirectory extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... params) {
+            DirectorySetup.UpdateDirectory(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME,
+                    "http://www.mangahere.co/mangalist/", ddbHelper.getWritableDatabase(), getContext());
+            return null;
+        }
+    }
+
     private class AsyncFetchDirectory extends AsyncTask<String, String, Void> {
 
         ContentValues values = new ContentValues();
@@ -228,7 +238,7 @@ public class DirectoryFragment extends Fragment {
             if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME)){
                 DirectorySetup.MangafoxSetup(db);
             }else if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME)){
-                DirectorySetup.MangaHereSetup(values, db, getContext());
+                DirectorySetup.MangaHereSetup(db, getContext());
             }else if(params[0].equals(DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME)){
                 DirectorySetup.BatotoSetup(values, db);
             }
@@ -336,7 +346,8 @@ public class DirectoryFragment extends Fragment {
             cursor = (Cursor) getItem(i);
 
             //Item item = (Item)getItem(i);
-            Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER)));
+            Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER))); //// FIXME: 4/13/2016 android.database.StaleDataException: Attempting to access a closed CursorWindow.Most probable cause: cursor is deactivated prior to calling this method.
+
 
             picture.setImageURI(uri);
             //name.setText(item.name);

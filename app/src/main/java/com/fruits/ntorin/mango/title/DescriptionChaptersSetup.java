@@ -24,7 +24,7 @@ public class DescriptionChaptersSetup {
             Document document = Jsoup.connect(href).get();
             Log.d("c", "connected to " + href);
             summary = document.getElementsByClass("summary");
-            Elements chapters = document.getElementsByClass("tips"); // a class that's similar to DummyItem, but stores chapter info
+            Elements chapters = document.getElementsByClass("tips");
             int ch = 1;
             chMap = new HashMap<String, Chapter>();
             for (Element element : chapters) {
@@ -48,14 +48,14 @@ public class DescriptionChaptersSetup {
         try {
             Document document = Jsoup.connect(href).get();
             Log.d("c", "connected to " + href);
-            summary.add(document.getElementById("show"));
+            summary.add(document.getElementById("show")); // FIXME: 4/9/2016  "Show less" appears in the description.
             Elements chapters = document.getElementsByClass("detail_list").first().getElementsByClass("left");
             int ch = 1;
             chMap = new HashMap<String, Chapter>();
             for (Element element : chapters) {
                 Element e = element.children().first();
                 Log.d("t", e.attr("href"));
-                chMap.put(String.valueOf(ch), new Chapter(e.ownText(), e.attr("href"))); //// FIXME: 4/9/2016  "Show less" appears in the description.
+                chMap.put(String.valueOf(ch), new Chapter(e.ownText(), e.attr("href")));
                 ch++;
             }
             String coverURL = document.getElementsByClass("manga_detail_top").first().getElementsByClass("img").first().attr("src");

@@ -21,15 +21,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fruits.ntorin.mango.title.Chapter;
 import com.fruits.ntorin.mango.title.DescriptionChapters;
 import com.fruits.ntorin.mango.R;
 import com.fruits.ntorin.mango.database.DirectoryContract;
 import com.fruits.ntorin.mango.database.DirectoryDbHelper;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -113,31 +131,32 @@ public class FavoritesFragment extends Fragment {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_settings:
+            case R.id.action_search_settings:
+                UpdateFavorites(getContext());
                 return true;
 
             case R.id.action_search:
                 return true;
 
             case R.id.list_view:
-                mView.findViewById(R.id.directory_grid).setVisibility(View.GONE);
-                absListView = (AbsListView) mView.findViewById(R.id.directory_list);
+                mView.findViewById(R.id.favorites_grid).setVisibility(View.GONE);
+                absListView = (AbsListView) mView.findViewById(R.id.favorites_list);
                 if(absListView.getOnItemClickListener() == null){
                     setListener();
                 }
                 absListView.setAdapter(simpleCursorAdapter);
-                mView.findViewById(R.id.directory_list).setVisibility(View.VISIBLE);
+                mView.findViewById(R.id.favorites_list).setVisibility(View.VISIBLE);
                 Log.d("tolist", "request list");
                 return true;
 
             case R.id.catalog_view:
-                mView.findViewById(R.id.directory_list).setVisibility(View.GONE);
-                absListView = (AbsListView) mView.findViewById(R.id.directory_grid);
+                mView.findViewById(R.id.favorites_list).setVisibility(View.GONE);
+                absListView = (AbsListView) mView.findViewById(R.id.favorites_grid);
                 if(absListView.getOnItemClickListener() == null){
                     setListener();
                 }
                 absListView.setAdapter(favoritesAdapter);
-                mView.findViewById(R.id.directory_grid).setVisibility(View.VISIBLE);
+                mView.findViewById(R.id.favorites_grid).setVisibility(View.VISIBLE);
                 Log.d("togrid", "request grid");
                 return true;
 
@@ -153,8 +172,8 @@ public class FavoritesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mInflater = inflater;
-        mView = inflater.inflate(R.layout.fragment_directory, container, false);
-        absListView = (AbsListView) mView.findViewById(R.id.directory_grid);
+        mView = inflater.inflate(R.layout.fragment_favorites, container, false);
+        absListView = (AbsListView) mView.findViewById(R.id.favorites_grid);
         mFilterText = (EditText) mView.findViewById(R.id.editText);
 
         setListener();
@@ -173,9 +192,11 @@ public class FavoritesFragment extends Fragment {
                 cursor.moveToPosition(position);
                 String title = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE));
                 String href = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF));
+                String cover = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER));
                 //test.close();
                 bundle.putString("title", title);
                 bundle.putString("href", href);
+                bundle.putString("cover", cover);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -266,13 +287,92 @@ public class FavoritesFragment extends Fragment {
                 }
             });
 
-            if(absListView.equals(mView.findViewById(R.id.directory_grid))) {
+            if(absListView.equals(mView.findViewById(R.id.favorites_grid))) {
                 absListView.setAdapter(favoritesAdapter);
             }else{
                 absListView.setAdapter(simpleCursorAdapter);
             }
             Log.d("c", "approached notify");
         }
+    }
+
+    private class AsyncUpdateFavorites extends AsyncTask<Context, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Context... params) {
+            Log.d("UpdateFavorites", "starting");
+            SQLiteDatabase db = ddbHelper.getWritableDatabase();
+            Cursor selectQuery = db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
+                    + ", " + DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF
+                    + ", " + DirectoryContract.DirectoryEntry.COLUMN_NAME_CHAPTERS + " FROM " +
+                    DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME, null);
+            String[] hrefs = new String[selectQuery.getCount()];
+            for(int i = 0; i < selectQuery.getCount(); i++){
+                selectQuery.moveToPosition(i);
+                hrefs[i] = selectQuery.getString(selectQuery.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF));
+                Log.d("UpdateFavorites", hrefs[i]);
+            }
+
+            for(int i = 0; i < hrefs.length; i++){
+                try {
+                    Document document = Jsoup.connect(hrefs[i]).get();
+                    Elements chapters = document.getElementsByClass("detail_list").first().getElementsByClass("left");
+                    //int ch = 1;
+                    ArrayList<Chapter> newChapters = new ArrayList<Chapter>();
+                    for (Element element : chapters) {
+                        Element e = element.children().first();
+                        Log.d("t", e.attr("href"));
+                        newChapters.add(new Chapter(e.ownText(), e.attr("href")));
+                        //ch++;
+                    }
+                    selectQuery.moveToPosition(i);
+                    String oldChaptersURI = selectQuery.getString(selectQuery.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_CHAPTERS));
+                    Uri uri = Uri.parse(oldChaptersURI);
+                    File file = new File(uri.getPath());
+                    FileInputStream fis = new FileInputStream(file);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    ArrayList<Chapter> oldChapters = (ArrayList<Chapter>) ois.readObject();
+                    for(Chapter newChapter : newChapters){
+                        boolean match = false;
+                        for(Chapter oldChapter : oldChapters){
+                            if(oldChapter.content.equals(newChapter.content)){
+                                match = true;
+                            }
+                            if(match){
+                                Log.d("UpdateFavorites", "match found");
+                                break;
+                            }
+                        }
+                        if(!match){
+                            Log.d("UpdateFavorites", "no matches found; alert update for " + newChapter.content);
+                        }
+                    }
+                    String filename = file.getName();
+                    file.delete();
+
+                    FileOutputStream fos = params[0].openFileOutput(filename, Context.MODE_PRIVATE);
+                    ObjectOutputStream oos = new ObjectOutputStream(fos);
+                    oos.writeObject(newChapters);
+
+                    oos.close();
+                    fos.close();
+                    ois.close();
+                    fis.close();
+
+                    //selectQuery.moveToPosition(i);
+
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            //ArrayList<Chapter>[] chapters = new ArrayList<Chapter>[selectQuery.getCount()];
+            //selectQuery.
+            return null;
+        }
+    }
+
+    public void UpdateFavorites(Context context){
+        new AsyncUpdateFavorites().execute(context);
     }
 
     /**
@@ -322,7 +422,6 @@ public class FavoritesFragment extends Fragment {
             //Item item = (Item)getItem(i);
 
             //Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER))); //// FIXME: 4/11/2016  android.database.StaleDataException: Attempting to access a closed CursorWindow.Most probable cause: cursor is deactivated prior to calling this method.
-
 
             //picture.setImageURI(uri);
             //name.setText(item.name);

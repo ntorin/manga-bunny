@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
  */
 public final class DirectoryContract {
 
+
     public DirectoryContract(){}
 
     public static abstract class DirectoryEntry implements BaseColumns {
@@ -15,6 +16,7 @@ public final class DirectoryContract {
         public static final String BATOTO_TABLE_NAME = "Batoto";
         public static final String FAVORITES_TABLE_NAME = "Favorites";
         public static final String HISTORY_TABLE_NAME = "History";
+        public static final String UPDATE_TABLE_NAME = "Updates";
 
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_HREF = "href";
@@ -24,6 +26,7 @@ public final class DirectoryContract {
         public static final String COLUMN_NAME_ARTIST = "artist";
         public static final String COLUMN_NAME_STATUS = "status";
         public static final String COLUMN_NAME_RANK = "rank";
+        public static final String COLUMN_NAME_CHAPTERS = "chapters";
         public static final String COLUMN_NAME_DATE = "date";
     }
 
@@ -63,6 +66,12 @@ public final class DirectoryContract {
                     DirectoryEntry.COLUMN_NAME_STATUS + " TEXT," +
                     DirectoryEntry.COLUMN_NAME_RANK + " TEXT" + " )";
 
+    public static final String SQL_CREATE_UPDATE_TABLE =
+            "CREATE TABLE " + DirectoryEntry.UPDATE_TABLE_NAME + " (" +
+                    DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    DirectoryEntry.COLUMN_NAME_TITLE + " TEXT," +
+                    DirectoryEntry.COLUMN_NAME_HREF + " TEXT" + " )";
+
     public static final String SQL_CREATE_FAVORITES_TABLE =
             "CREATE TABLE " + DirectoryEntry.FAVORITES_TABLE_NAME + " (" +
                     DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -73,7 +82,8 @@ public final class DirectoryContract {
                     DirectoryEntry.COLUMN_NAME_AUTHOR + " TEXT," +
                     DirectoryEntry.COLUMN_NAME_ARTIST + " TEXT," +
                     DirectoryEntry.COLUMN_NAME_STATUS + " TEXT," +
-                    DirectoryEntry.COLUMN_NAME_RANK + " TEXT" + " )";
+                    DirectoryEntry.COLUMN_NAME_RANK + " TEXT," +
+                    DirectoryEntry.COLUMN_NAME_CHAPTERS + " TEXT" + " )";
 
     public static final String SQL_CREATE_HISTORY_TABLE =
             "CREATE TABLE " + DirectoryEntry.HISTORY_TABLE_NAME + " (" +
@@ -99,6 +109,9 @@ public final class DirectoryContract {
 
     public static final String SQL_DELETE_BATOTO_TABLE =
             "DROP TABLE IF EXISTS " + DirectoryEntry.BATOTO_TABLE_NAME;
+
+    public static final String SQL_DELETE_UPDATE_TABLE =
+            "DROP TABLE IF EXISTS " + DirectoryEntry.UPDATE_TABLE_NAME;
 
     public static final String SQL_DELETE_HISTORY_TABLE =
             "DROP TABLE IF EXISTS " + DirectoryEntry.HISTORY_TABLE_NAME;

@@ -1,6 +1,7 @@
 package com.fruits.ntorin.mango.title;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -32,8 +33,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -60,6 +66,7 @@ public class DescriptionChapters extends AppCompatActivity
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Map<String, Chapter> mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +136,7 @@ public class DescriptionChapters extends AppCompatActivity
 
             summary = titlePackage.elements;
             chMap = titlePackage.chapterMap;
+            Log.d("check", "" + getIntent().getStringExtra("cover"));
             cover = Uri.parse(getIntent().getStringExtra("cover"));
             String summaryText = "";
             if (summary != null) {
@@ -149,6 +157,7 @@ public class DescriptionChapters extends AppCompatActivity
                     descriptionFragment.setCover(progress[0].cover);
                     Log.d("s", "set text");
                     chaptersFragment.setAdapter(progress[0].map);
+                    mMap = progress[0].map;
 
                 }
             });
@@ -269,7 +278,7 @@ public class DescriptionChapters extends AppCompatActivity
 
     }
 
-    public void AddToFavorites(View view){
+    public void AddToFavorites(View view) {
         Log.d("DescriptionChapters", "AddToFavorites");
         Intent intent = this.getIntent();
         DirectoryDbHelper dbHelper = new DirectoryDbHelper(this);
@@ -280,10 +289,30 @@ public class DescriptionChapters extends AppCompatActivity
         String href = intent.getStringExtra("href");
 
         db.execSQL("INSERT INTO " + DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME +
-                " SELECT * FROM " + DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME +
+                " SELECT *, NULL FROM " + DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME +
                 " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + href + "\'");
-        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, title);
-        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, href);
+        ArrayList<Chapter> chapters = new ArrayList<Chapter>();
+        int n = 0;
+        for (Chapter chapter : mMap.values()) {
+            chapters.add(n, chapter);
+            n++;
+        }
+        String chaptersURI = null;
+        try {
+            FileOutputStream fos = openFileOutput(title + "en", Context.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(chapters);
+            chaptersURI = getBaseContext().getFileStreamPath(title + "en").toURI().toString();
+            oos.close();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_CHAPTERS, chaptersURI);
+        db.update(DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME, values,
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + href + "\'", null);
         //db.insert(DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME, null, values);
     }
 
