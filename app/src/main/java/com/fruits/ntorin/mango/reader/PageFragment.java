@@ -18,6 +18,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static com.fruits.ntorin.mango.BitmapFunctions.getBitmapFromURL;
@@ -43,7 +45,7 @@ public class PageFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private ImageView mImageView;
-    private Bitmap mBitmap;
+    private String mBitmapURI;
     private Bitmap bitmap;
 
 
@@ -136,7 +138,22 @@ public class PageFragment extends Fragment {
             }
             Element li = document.getElementById("image");
             String bmpURL = li.attr("src");
-            mBitmap = getBitmapFromURL(bmpURL);
+            Log.d("test", "" + li.);
+            bitmap = getBitmapFromURL(bmpURL);
+            mBitmapURI = null;
+            if(bitmap != null) {
+                try{
+                FileOutputStream fos = getActivity().openFileOutput(li.attr("alt"), Context.MODE_PRIVATE);
+
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                mBitmapURI = getActivity().getFileStreamPath(li.attr("alt")).toURI().toString();
+                Log.d("filepathURI", "" + mBitmapURI);
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             //setImage(bitmap);
             Log.d("pagefragment", "doInBackground done");
             return null;
@@ -146,9 +163,11 @@ public class PageFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             Log.d("pagefragment", "onPostExecute");
-            setImage(mBitmap);
-            Log.d("onCreateView resetimg", "setting image" + mBitmap);
-            bitmap = mBitmap;
+            if(mBitmapURI != null) {
+                setImage(mBitmapURI);
+                Log.d("onCreateView resetimg", "setting image" + mBitmapURI);
+            }
+            //bitmap = mBitmap;
             Log.d("pagefragment", "onPostExecute finished");
         }
     }
@@ -163,8 +182,10 @@ public class PageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_page, container, false);
         mImageView = (ImageView) view.findViewById(R.id.reader_img);
         //if(bitmap != null){
-            Log.d("onCreateView resetimg", "setting image" + mBitmap);
-            setImage(mBitmap);
+            Log.d("onCreateView resetimg", "setting image" + mBitmapURI);
+        if(mBitmapURI != null) {
+            setImage(mBitmapURI);
+        }
         //}else{
             //new AsyncFetchPage().execute(ARG_PARAM1);
         //}
@@ -196,10 +217,11 @@ public class PageFragment extends Fragment {
         mListener = null;
     }
 
-    public void setImage(Bitmap bitmap){
-        mImageView.setImageBitmap(bitmap);
+    public void setImage(String bitmapURI){
+        Uri uri = Uri.parse(bitmapURI);
+        mImageView.setImageURI(uri);
         mImageView.postInvalidate();
-        bitmap = mBitmap;
+        //bitmap = mBitmap;
     }
 
     /**
