@@ -18,6 +18,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class PageFragment extends Fragment {
     private ImageView mImageView;
     private String mBitmapURI;
     private Bitmap bitmap;
+    private String mFileName;
 
 
     public PageFragment() {
@@ -85,6 +87,8 @@ public class PageFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        File file = getActivity().getFileStreamPath(mFileName);
+        file.delete();
         Log.d("pagefragment", "PageFragment destroyed");
     }
 
@@ -138,17 +142,25 @@ public class PageFragment extends Fragment {
             }
             Element li = document.getElementById("image");
             String bmpURL = li.attr("src");
-            Log.d("test", "" + li.);
+            //Log.d("test", "" + li.);
             bitmap = getBitmapFromURL(bmpURL);
             mBitmapURI = null;
+
+
+            mFileName += document.title();
+            Log.d("pagetitle", mFileName);
+
             if(bitmap != null) {
-                try{
-                FileOutputStream fos = getActivity().openFileOutput(li.attr("alt"), Context.MODE_PRIVATE);
+                try {
+                    FileOutputStream fos = null;
+                    if (getActivity() != null) {
+                        fos = getActivity().openFileOutput(mFileName, Context.MODE_PRIVATE);
+                    }
 
 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                mBitmapURI = getActivity().getFileStreamPath(li.attr("alt")).toURI().toString();
-                Log.d("filepathURI", "" + mBitmapURI);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    mBitmapURI = getActivity().getFileStreamPath(mFileName).toURI().toString();
+                    Log.d("filepathURI", "" + mBitmapURI);
                     fos.close();
                 } catch (IOException e) {
                     e.printStackTrace();

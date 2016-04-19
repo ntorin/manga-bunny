@@ -98,10 +98,11 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(1000);
         //mViewPager.setOffscreenPageLimit(mPages);
+        Log.d("ChapterReader", "onCreate finished");
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -180,8 +181,14 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             Log.d("ChapterReader", "pager position " + position);
+            if(position + 1 >= mPages){
+                //mViewPager.setOffscreenPageLimit(1);
+            }else{
+                Log.d("PageFragment getItem", "not yet," + position + " " + mPages);
+            }
             return PageFragment.newInstance(mPageURLs[position]);
         }
+
 
         @Override
         public int getCount() {

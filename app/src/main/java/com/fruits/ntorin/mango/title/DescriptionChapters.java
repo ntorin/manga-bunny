@@ -3,6 +3,7 @@ package com.fruits.ntorin.mango.title;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.fruits.ntorin.mango.database.DirectoryContract;
 import com.fruits.ntorin.mango.database.DirectoryDbHelper;
@@ -32,6 +34,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.w3c.dom.Text;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -153,7 +156,30 @@ public class DescriptionChapters extends AppCompatActivity
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    descriptionFragment.setText(progress[0].description);
+                    DirectoryDbHelper dbHelper = new DirectoryDbHelper(DescriptionChapters.this);
+                    SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+                    Cursor cursor = db.rawQuery("SELECT * FROM " + DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME
+                            + " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + " =\'"
+                            + getIntent().getStringExtra("title") + "\'", null);
+                    cursor.moveToFirst();
+                    String titleInfo = "";
+                    Log.d("count", "" + cursor.getCount());
+                    titleInfo += "Author(s): ";
+                    titleInfo += cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_AUTHOR)) + "\n\n";
+                    titleInfo += "Artist(s): ";
+                    titleInfo += cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_ARTIST)) + "\n\n";
+                    titleInfo += "Genre(s): ";
+                    titleInfo += cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_GENRES)) + "\n\n";
+                    titleInfo += "Status: ";
+                    titleInfo += cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_STATUS)) + "\n\n";
+                    titleInfo += "Ranking: ";
+                    titleInfo += cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_RANK)) + "\n";
+
+
+
+                    descriptionFragment.setText(progress[0].description,  (TextView) findViewById(R.id.description_title_description));
+                    descriptionFragment.setText(titleInfo, (TextView) findViewById(R.id.description_title_info));
                     descriptionFragment.setCover(progress[0].cover);
                     Log.d("s", "set text");
                     chaptersFragment.setAdapter(progress[0].map);

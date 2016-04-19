@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.fruits.ntorin.mango.R;
@@ -66,7 +67,8 @@ public class DescriptionFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_description_chapters, container, false);
-        TextView textView = (TextView) rootView.findViewById(R.id.description_section_label);
+        //ScrollView scrollView = (ScrollView) rootView.findViewById(fragment)
+        //TextView textView = (TextView) rootView.findViewById(R.id.description_title_description);
         return rootView;
     }
 
@@ -94,8 +96,8 @@ public class DescriptionFragment extends Fragment {
         mListener = null;
     }
 
-    public void setText(String text){
-        TextView textView = (TextView) this.getView().findViewById(R.id.description_section_label); //// FIXME: 4/9/2016 java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.View android.view.View.findViewById(int)' on a null object reference
+    public void setText(String text, TextView textView){
+         //// FIXME: 4/9/2016 java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.View android.view.View.findViewById(int)' on a null object reference
 
         textView.setText(text);
     }
