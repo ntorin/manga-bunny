@@ -87,6 +87,7 @@ public class PageFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d("mFileName", "" + mFileName);
         File file = getActivity().getFileStreamPath(mFileName);
         file.delete();
         Log.d("pagefragment", "PageFragment destroyed");

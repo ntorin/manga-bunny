@@ -325,29 +325,31 @@ public class DirectoryFragment extends Fragment {
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup)
-        {
+        public View getView(int i, View view, ViewGroup viewGroup) {
             //Log.d("DirectoryAdapter", "getView started");
             View v = view;
             ImageView picture;
             TextView name;
             Cursor cursor;
 
-            if(v == null)
-            {
+            if (v == null) {
                 v = mInflater.inflate(R.layout.gridview_item, viewGroup, false);
                 v.setTag(R.id.picture, v.findViewById(R.id.picture));
                 v.setTag(R.id.text, v.findViewById(R.id.text));
             }
 
 
-            picture = (ImageView)v.getTag(R.id.picture);
-            name = (TextView)v.getTag(R.id.text);
+            picture = (ImageView) v.getTag(R.id.picture);
+            name = (TextView) v.getTag(R.id.text);
             cursor = (Cursor) getItem(i);
 
+            String uriString = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER));
+            Log.d("coverURI", "testcover" + uriString);
             //Item item = (Item)getItem(i);
-            Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER))); //// FIXME: 4/13/2016 android.database.StaleDataException: Attempting to access a closed CursorWindow.Most probable cause: cursor is deactivated prior to calling this method.
-
+            Uri uri = null;
+            if (uriString != null) {
+                uri = Uri.parse(uriString);
+            }
 
             picture.setImageURI(uri);
             //name.setText(item.name);

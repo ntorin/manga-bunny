@@ -178,4 +178,18 @@
     <string name="title_activity_chapter_reader">ChapterReader</string>
 
     <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="action_crop">Crop</string>
+    <string name="action_share_page">Share page link</string>
+    <string name="action_left_to_right">Read left to right</string>
+    <string name="action_right_to_left">Read right to left</string>
+    <string name="action_top_to_bottom">Read top to bottom</string>
+    <string name="action_page_jump">Page jump</string>
+    <string name="action_bookmark">Bookmark this page</string>
+    <string name="action_more_options">More options</string>
+    <string name="action_lock_portrait">Vertical orientation</string>
+    <string name="action_lock_landscape">Horizontal orientation</string>
+    <string name="action_download_title">Download title</string>
+    <string name="action_read_title">Read this title</string>
+    <string name="action_favorite_title">Add to favorites</string>
+    <string name="action_unfavorite_title">Remove from favorites</string>
 </resources>

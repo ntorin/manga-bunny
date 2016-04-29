@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fruits.ntorin.mango.database.DirectoryContract;
 import com.fruits.ntorin.mango.database.DirectoryDbHelper;
@@ -111,11 +112,23 @@ public class DescriptionChapters extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case R.id.favorite_title:
+                AddToFavorites();
+                return true;
+            case R.id.unfavorite_title:
+                RemoveFromFavorites();
+                return true;
+            case R.id.read_title:
+                return true;
+            case R.id.download_title:
+                return true;
+            case R.id.share_title:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
     }
 
     private class AsyncFetchTitle extends AsyncTask<Void, ProgressUpdate, Void>{
@@ -304,7 +317,7 @@ public class DescriptionChapters extends AppCompatActivity
 
     }
 
-    public void AddToFavorites(View view) {
+    public void AddToFavorites() {
         Log.d("DescriptionChapters", "AddToFavorites");
         Intent intent = this.getIntent();
         DirectoryDbHelper dbHelper = new DirectoryDbHelper(this);
@@ -340,9 +353,12 @@ public class DescriptionChapters extends AppCompatActivity
         db.update(DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME, values,
                 DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + href + "\'", null);
         //db.insert(DirectoryContract.DirectoryEntry.FAVORITES_TABLE_NAME, null, values);
+
+        Toast toast = Toast.makeText(getBaseContext(), "Added to Favorites", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
-    public void RemoveFromFavorites(View view){
+    public void RemoveFromFavorites(){
         Log.d("DescriptionChapters", "RemoveFromFavorites");
         Intent intent = this.getIntent();
         DirectoryDbHelper dbHelper = new DirectoryDbHelper(this);

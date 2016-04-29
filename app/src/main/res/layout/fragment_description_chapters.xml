@@ -34,7 +34,7 @@
 
     </LinearLayout>
 
-    <RelativeLayout android:id="@+id/footer"
+    <!-- <RelativeLayout android:id="@+id/footer"
         android:layout_width="fill_parent" android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_height="wrap_content">
@@ -49,7 +49,7 @@
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </RelativeLayout> -->
 
     <ScrollView
         android:layout_width="wrap_content"
