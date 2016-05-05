@@ -3,55 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".reader.ChapterReader">
 
-    <item
-        android:id="@+id/action_left_to_right"
-        android:icon="@drawable/ic_action_forward"
-        android:title="@string/action_left_to_right"
-        app:showAsAction="always" />
 
-    <item
-        android:id="@+id/action_right_to_left"
-        android:icon="@drawable/ic_action_back"
-        android:title="@string/action_right_to_left"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_top_to_bottom"
-        android:icon="@drawable/ic_action_expand"
-        android:title="@string/action_top_to_bottom"
-        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_page_jump"
         android:icon="@drawable/ic_action_view_as_grid"
         android:title="@string/action_page_jump"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_bookmark"
-        android:icon="@drawable/ic_action_important"
-        android:title="@string/action_bookmark"
-        app:showAsAction="always" />
-    
-    <item
-        android:id="@+id/action_crop"
-        android:icon="@drawable/ic_action_crop"
-        android:title="@string/action_crop"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_share_page"
-        android:icon="@drawable/ic_action_share"
-        android:title="@string/action_share_page"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_more_options"
         android:icon="@drawable/ic_action_overflow"
         android:title="@string/action_more_options"
-        app:showAsAction="always">
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom">
 
         <menu>
+            <item
+                android:id="@+id/action_left_to_right"
+                android:icon="@drawable/ic_action_forward"
+                android:title="@string/action_left_to_right"
+                app:showAsAction="ifRoom" />
+
+            <item
+                android:id="@+id/action_right_to_left"
+                android:icon="@drawable/ic_action_back"
+                android:title="@string/action_right_to_left"
+                app:showAsAction="ifRoom" />
+
+            <item
+                android:id="@+id/action_top_to_bottom"
+                android:icon="@drawable/ic_action_expand"
+                android:title="@string/action_top_to_bottom"
+                app:showAsAction="ifRoom" />
+
             <item
                 android:id="@+id/action_lock_portrait"
                 android:title="@string/action_lock_portrait" />

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#025574</color>
+    <color name="colorPrimary">#005473</color>
     <color name="colorPrimaryDark">#023141</color>
     <color name="colorAccent">#ffffff</color>
 
@@ -13,4 +13,8 @@
     <color name="primary_material_light">#80000000</color>
     <color name="foreground_material_light">#ffffff</color>
     <color name="black">#ffffff</color>
+    <color name="readerColorPrimary">#000000</color>
+    <color name="readerColorPrimaryDark">#000000</color>
+    <color name="readerBackground">#0d0d0d</color>
+    <color name="readerColorAccent">#ffffff</color>
 </resources>

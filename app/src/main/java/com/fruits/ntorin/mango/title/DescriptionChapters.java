@@ -1,5 +1,7 @@
 package com.fruits.ntorin.mango.title;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -124,6 +126,7 @@ public class DescriptionChapters extends AppCompatActivity
             case R.id.download_title:
                 return true;
             case R.id.share_title:
+                CopyURL();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -208,13 +211,15 @@ public class DescriptionChapters extends AppCompatActivity
         }
     }
 
-    private class AsyncGetPages extends AsyncTask<Void, Void, Void>{
+    public class AsyncGetPages extends AsyncTask<Void, Void, Void>{
 
         Chapter item;
+        String chno;
 
-        public AsyncGetPages(Chapter item){
+        public AsyncGetPages(Chapter item, String chno){
             super();
             this.item = item;
+            this.chno = chno;
         }
 
         @Override
@@ -258,6 +263,8 @@ public class DescriptionChapters extends AppCompatActivity
             bundle.putString("href", item.content);
             bundle.putStringArray("pageURLs", pageURLs);
             bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here
+            bundle.putInt("chno", Integer.parseInt(chno));
+            bundle.putSerializable("chlist", (HashMap) mMap);
             intent.putExtras(bundle);
 
             Log.d("toChapterReader", item.content);
@@ -299,7 +306,15 @@ public class DescriptionChapters extends AppCompatActivity
         intent.putExtras(bundle);*/
         Log.d("toChapterReader", "chapter pressed");
         Log.d("toChapterReader", item.content + " " + item.id);
-        new AsyncGetPages(item).execute();
+        String chno = "";
+        for(String key : mMap.keySet()){
+            Chapter ch = mMap.get(key);
+            if(ch.content.equals(item.content)){
+                chno = key;
+                Log.d("DescriptionChapters", "chno " + chno + " keyset key " + key + " itemcontent " + item.content + " chcontent " + ch.content);
+            }
+        }
+        new AsyncGetPages(item, chno).execute();
 
         /*startActivity(intent);*/
     }
@@ -368,6 +383,21 @@ public class DescriptionChapters extends AppCompatActivity
 
         db.delete(DirectoryContract.DirectoryEntry.HISTORY_TABLE_NAME,
                 DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + href + "\'", null);
+
+        Toast toast = Toast.makeText(getBaseContext(), "Removed from Favorites", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    private void CopyURL(){
+        String href = getIntent().getStringExtra("href");
+
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("pageURL", href);
+        clipboardManager.setPrimaryClip(clipData);
+
+        Toast toast = Toast.makeText(getBaseContext(), "Copied link to clipboard", Toast.LENGTH_SHORT);
+        toast.show();
+
     }
 
     private String getDateTime() {

@@ -1,14 +1,19 @@
 package com.fruits.ntorin.mango.reader;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -22,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,8 +35,22 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fruits.ntorin.mango.R;
+import com.fruits.ntorin.mango.database.DirectoryContract;
+import com.fruits.ntorin.mango.database.DirectoryDbHelper;
+import com.fruits.ntorin.mango.title.Chapter;
+import com.fruits.ntorin.mango.title.DescriptionChapters;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChapterReader extends AppCompatActivity implements PageFragment.OnFragmentInteractionListener{
 
@@ -51,6 +71,16 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
     private int mPages;
     private String mHref;
     private String[] mPageURLs;
+    private int mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+    private Activity mScaleDetector;
+    private float mLastTouchX;
+    private float mLastTouchY;
+    private float mPosY;
+    private float mPosX;
+    private float mTouchX;
+    private float mDragX;
+    private Map<String, Chapter> mMap;
+    private boolean backFlag = false;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -101,7 +131,10 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(1000);
+        mViewPager.setOffscreenPageLimit(3);
+        if(getIntent().getBooleanExtra("backflag", false)){
+            mViewPager.setCurrentItem(mPages - 1);
+        }
         //mViewPager.setOffscreenPageLimit(mPages);
         Log.d("ChapterReader", "onCreate finished");
 
@@ -122,11 +155,20 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id){
+            case R.id.action_left_to_right:
+                return true;
+            case R.id.action_right_to_left:
+                return true;
+            case R.id.action_top_to_bottom:
+                return true;
+            case R.id.action_page_jump:
+                return true;
+            case R.id.action_more_options:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -169,6 +211,207 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        final int action = MotionEventCompat.getActionMasked(event);
+
+        if(mViewPager.getCurrentItem() == 0) {
+            switch (action) {
+                case MotionEvent.ACTION_DOWN: {
+                    Log.d("ChapterReaderMotion", "ACTION_DOWN");
+                    final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                    mTouchX = MotionEventCompat.getX(event, pointerIndex);
+                    mActivePointerId = MotionEventCompat.getPointerId(event, 0);
+                    Log.d("ChapterReaderMotion", "" + mTouchX);
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    Log.d("ChapterReaderMotion", "ACTION_MOVE");
+                    final int pointerIndex = MotionEventCompat.findPointerIndex(event, mActivePointerId);
+                    mDragX = MotionEventCompat.getX(event, pointerIndex);
+                    Log.d("ChapterReaderMotion", "" + mDragX);
+                    if (mTouchX - mDragX < -300) {
+                        getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+                    } else {
+                        getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.readerBackground));
+                    }
+                    break;
+
+                }
+                case MotionEvent.ACTION_UP: {
+                    Log.d("ChapterReaderMotion", "ACTION_UP");
+                    if (mTouchX - mDragX < -300) {
+                        Log.d("ChapterReader", "back one chapter");
+                        HashMap<String, Chapter> map = (HashMap) getIntent().getSerializableExtra("chlist");
+                        Log.d("ChapterReaderMotion", "" + map);
+                        int intkey = getIntent().getIntExtra("chno", 1);
+                        String key = String.valueOf(++intkey);
+                        Chapter next = map.get(key);
+                        Log.d("ChapterReaderMotion", "" + next + " " + key);
+                        if(next == null){
+                            Toast toast = Toast.makeText(getBaseContext(), "This is the first chapter", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }else {
+                            backFlag = true;
+                            new AsyncGetPages(next, intkey).execute();
+                        }
+                    }
+                    getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.readerBackground));
+                    mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                    mTouchX = 0;
+                    mDragX = 0;
+                    break;
+                }
+                case MotionEvent.ACTION_CANCEL: {
+                    Log.d("ChapterReaderMotion", "ACTION_CANCEL");
+                    mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                    break;
+                }
+            }
+        }
+
+        if(mViewPager.getCurrentItem() == mPages - 1) {
+            switch (action) {
+                case MotionEvent.ACTION_DOWN: {
+                    Log.d("ChapterReaderMotion", "ACTION_DOWN");
+                    final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                    mTouchX = MotionEventCompat.getX(event, pointerIndex);
+                    mActivePointerId = MotionEventCompat.getPointerId(event, 0);
+                    Log.d("ChapterReaderMotion", "" + mTouchX);
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    Log.d("ChapterReaderMotion", "ACTION_MOVE");
+                    final int pointerIndex = MotionEventCompat.findPointerIndex(event, mActivePointerId);
+                    mDragX = MotionEventCompat.getX(event, pointerIndex);
+                    Log.d("ChapterReaderMotion", "" + mDragX);
+                    if (mTouchX - mDragX > 300) {
+                        getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+                    } else {
+                        getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.readerBackground));
+                    }
+                    break;
+
+                }
+                case MotionEvent.ACTION_UP: {
+                    Log.d("ChapterReaderMotion", "ACTION_UP");
+                    if (mTouchX - mDragX > 300) {
+                        Log.d("ChapterReader", "forward one chapter");
+                        HashMap<String, Chapter> map = (HashMap) getIntent().getSerializableExtra("chlist");
+                        Log.d("ChapterReaderMotion", "" + map);
+                        int intkey = getIntent().getIntExtra("chno", 1);
+                        String key = String.valueOf(--intkey);
+                        Chapter next = map.get(key);
+                        Log.d("ChapterReaderMotion", "" + next + " " + key);
+                        if(next == null){
+                            Toast toast = Toast.makeText(getBaseContext(), "This is the last chapter", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }else {
+                            new AsyncGetPages(next, intkey).execute();
+                        }
+                    }
+                    getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.readerBackground));
+                    mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                    mTouchX = 0;
+                    mDragX = 0;
+                    break;
+                }
+                case MotionEvent.ACTION_CANCEL: {
+                    Log.d("ChapterReaderMotion", "ACTION_CANCEL");
+                    mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                    mTouchX = 0;
+                    mDragX = 0;
+                    break;
+                }
+            }
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+    public class AsyncGetPages extends AsyncTask<Void, Void, Void> {
+
+        Chapter item;
+        int chno;
+
+        public AsyncGetPages(Chapter item, int chno){
+            super();
+            this.item = item;
+            this.chno = chno;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Elements pages = null;
+            String[] pageURLs = new String[0];
+            try {
+                Document document = Jsoup.connect(item.content).get();
+                Elements li = document.getElementsByAttributeValue("onchange", "change_page(this)");
+                pages = li.first().children();
+                Log.d("#pages", "" + (pages.size()));
+                //li = document.getElementsByAttributeValue("class", "btn next_page");
+                Log.d("nextpageurl", "" + li.first().attr("href"));
+                pageURLs = new String[pages.size()];
+                int i = 0;
+                for(Element option : pages){
+                    pageURLs[i] = option.attr("value");
+                    Log.d("getpages", option.attr("value"));
+                    i++;
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            /*ContentValues values = new ContentValues();
+            DirectoryDbHelper dbHelper = new DirectoryDbHelper(getBaseContext());
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, item.id);
+            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, item.content);
+            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_DATE, getDateTime());
+            db.delete(DirectoryContract.DirectoryEntry.HISTORY_TABLE_NAME,
+                    DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + item.content + "\'", null);
+            db.insert(DirectoryContract.DirectoryEntry.HISTORY_TABLE_NAME, null, values);
+            Log.d("DescriptionChapters", "history time " + getDateTime());*/
+
+            Intent intent = new Intent(ChapterReader.this, ChapterReader.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("href", item.content);
+            bundle.putStringArray("pageURLs", pageURLs);
+            bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here
+            bundle.putInt("chno", chno);
+            bundle.putBoolean("backflag", backFlag);
+            bundle.putSerializable("chlist", (HashMap) getIntent().getSerializableExtra("chlist"));
+            intent.putExtras(bundle);
+
+            Log.d("toChapterReader", item.content);
+            startActivity(intent);
+
+
+            return null;
+        }
+
+        /*@Override
+        protected void onPostExecute(Void aVoid) {
+            runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                    Intent intent = new Intent(DescriptionChapters.this, ChapterReader.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("href", href);
+                    intent.putExtras(bundle);
+
+                    Log.d("toChapterReader", href);
+                    startActivity(intent);
+
+                }
+            });
+        }*/
+    }
+
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -183,11 +426,11 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Log.d("ChapterReader", "pager position " + position);
+            //Log.d("ChapterReader", "pager position " + position);
             if(position + 1 >= mPages){
                 //mViewPager.setOffscreenPageLimit(1);
             }else{
-                Log.d("PageFragment getItem", "not yet," + position + " " + mPages);
+                //Log.d("PageFragment getItem", "not yet," + position + " " + mPages);
             }
             return PageFragment.newInstance(mPageURLs[position]);
         }

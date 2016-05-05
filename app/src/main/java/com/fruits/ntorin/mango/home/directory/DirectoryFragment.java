@@ -1,5 +1,6 @@
 package com.fruits.ntorin.mango.home.directory;
 
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -114,7 +115,8 @@ public class DirectoryFragment extends Fragment {
 
         switch (id) {
             case R.id.action_search_settings:
-                new AsyncUpdateDirectory().execute();
+               // new AsyncUpdateDirectory().execute();
+                ConfigureSearch();
                 return true;
 
             case R.id.action_search:
@@ -299,6 +301,12 @@ public class DirectoryFragment extends Fragment {
             }
             Log.d("c", "approached notify");
         }
+    }
+
+    public void ConfigureSearch(){
+        Dialog dialog = new Dialog(getContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.activity_app_home);
+        dialog.show();
     }
 
     /**

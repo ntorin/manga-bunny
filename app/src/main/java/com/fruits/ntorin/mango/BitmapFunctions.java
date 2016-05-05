@@ -37,6 +37,8 @@ public class BitmapFunctions {
             bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
         } catch (IOException e) {
             Log.e("e", "Could not load Bitmap from: " + url);
+            Log.d("retry", "Second attempt");
+            getBitmapFromURL(url);
         } finally {
             closeStream(in);
             closeStream(out);

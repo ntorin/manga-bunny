@@ -13,6 +13,8 @@
         <item name="android:textColorSecondaryInverse">@color/secondary_text_material_dark</item>
     </style>
 
+
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -21,6 +23,27 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- Reader theme. -->
+    <style name="ReaderTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/readerColorPrimary</item>
+        <item name="colorPrimaryDark">@color/readerColorPrimaryDark</item>
+        <item name="colorAccent">@color/readerColorAccent</item>
+        <item name="android:colorBackground">@color/readerBackground</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColorPrimary">@color/primary_text_material_light</item>
+        <item name="android:textColorSecondary">@color/secondary_text_material_light</item>
+        <item name="android:textColorSecondaryInverse">@color/secondary_text_material_dark</item>
+    </style>
+
+    <style name="ReaderTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="ReaderTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="ReaderTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="FullscreenTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>

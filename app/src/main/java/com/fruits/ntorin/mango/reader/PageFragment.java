@@ -1,16 +1,29 @@
 package com.fruits.ntorin.mango.reader;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.fruits.ntorin.mango.R;
 
@@ -49,6 +62,12 @@ public class PageFragment extends Fragment {
     private String mBitmapURI;
     private Bitmap bitmap;
     private String mFileName;
+    private int mActivePointerId;
+    private Activity mScaleDetector;
+    private float mLastTouchX;
+    private float mLastTouchY;
+    private float mPosX;
+    private float mPosY;
 
 
     public PageFragment() {
@@ -80,23 +99,141 @@ public class PageFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        setHasOptionsMenu(true);
+    }
+
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_page, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        switch(id){
+            case R.id.action_bookmark:
+                return true;
+            case R.id.action_crop:
+                return true;
+            case R.id.action_share_page:
+                CopyPageURL();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //@Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        // Let the ScaleGestureDetector inspect all events.
+        mScaleDetector.onTouchEvent(ev);
+
+        final int action = MotionEventCompat.getActionMasked(ev);
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: {
+                Log.d("ChapterReaderMotion", "ACTION_DONW");
+                final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+                final float x = MotionEventCompat.getX(ev, pointerIndex);
+                final float y = MotionEventCompat.getY(ev, pointerIndex);
+
+                // Remember where we started (for dragging)
+                mLastTouchX = x;
+                mLastTouchY = y;
+                // Save the ID of this pointer (for dragging)
+                mActivePointerId = MotionEventCompat.getPointerId(ev, 0);
+                break;
+            }
+
+            case MotionEvent.ACTION_MOVE: {
+                Log.d("ChapterReaderMotion", "ACTION_MOVE");
+                // Find the index of the active pointer and fetch its position
+                final int pointerIndex =
+                        MotionEventCompat.findPointerIndex(ev, mActivePointerId);
+
+                final float x = MotionEventCompat.getX(ev, pointerIndex);
+                final float y = MotionEventCompat.getY(ev, pointerIndex);
+
+                // Calculate the distance moved
+                final float dx = x - mLastTouchX;
+                final float dy = y - mLastTouchY;
+
+                mPosX += dx;
+                mPosY += dy;
+
+                mImageView.invalidate();
+
+                // Remember this touch position for the next move event
+                mLastTouchX = x;
+                mLastTouchY = y;
+
+                break;
+            }
+
+            case MotionEvent.ACTION_UP: {
+                Log.d("ChapterReaderMotion", "ACTION_UP");
+                mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                break;
+            }
+
+            case MotionEvent.ACTION_CANCEL: {
+                Log.d("ChapterReaderMotion", "ACTION_CANCEL");
+                mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                break;
+            }
+
+            case MotionEvent.ACTION_POINTER_UP: {
+                Log.d("ChapterReaderMotion", "ACTION_POINTER_UP");
+
+                final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+                final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
+
+                if (pointerId == mActivePointerId) {
+                    // This was our active pointer going up. Choose a new
+                    // active pointer and adjust accordingly.
+                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                    mLastTouchX = MotionEventCompat.getX(ev, newPointerIndex);
+                    mLastTouchY = MotionEventCompat.getY(ev, newPointerIndex);
+                    mActivePointerId = MotionEventCompat.getPointerId(ev, newPointerIndex);
+                }
+                break;
+            }
+        }
+        return true;
+    }
+
+    private void CopyPageURL() {
         String href = getArguments().getString("href");
-        new AsyncFetchPage().execute(href);
+        ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("pageURL", href);
+        clipboardManager.setPrimaryClip(clipData);
+
+        Toast toast = Toast.makeText(getContext(), "Copied page link to clipboard", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         Log.d("mFileName", "" + mFileName);
         File file = getActivity().getFileStreamPath(mFileName);
         file.delete();
-        Log.d("pagefragment", "PageFragment destroyed");
+        super.onDestroy();
+        //Log.d("pagefragment", "PageFragment destroyed");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("pagefragment", "PageFragment paused");
+        //Log.d("pagefragment", "PageFragment paused");
     }
 
 
@@ -106,7 +243,7 @@ public class PageFragment extends Fragment {
         if(bitmap == null){
             //bitmap = mBitmap;
         }
-        Log.d("pagefragment", "PageFragment started");
+        //Log.d("pagefragment", "PageFragment started");
 
     }
 
@@ -116,7 +253,7 @@ public class PageFragment extends Fragment {
         if(bitmap == null){
             //bitmap = mBitmap;
         }
-        Log.d("pagefragment", "PageFragment view destroyed");
+        //Log.d("pagefragment", "PageFragment view destroyed");
     }
 
     private class AsyncFetchPage extends AsyncTask<String, Void, Void>{
@@ -124,6 +261,7 @@ public class PageFragment extends Fragment {
         String href;
         Bitmap bitmap;
         PageFragment pageFragment;
+        ImageView imageView;
 
         public AsyncFetchPage(){
             super();
@@ -132,8 +270,15 @@ public class PageFragment extends Fragment {
         }
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ajax_loader);
+            mImageView.setImageDrawable(drawable);
+        }
+
+        @Override
         protected Void doInBackground(String... params) {
-            Log.d("pagefragment", "doInBackground");
+            //Log.d("pagefragment", "doInBackground");
             Document document = null;
             try {
                 Log.d("checkurl", params[0]);
@@ -168,20 +313,20 @@ public class PageFragment extends Fragment {
                 }
             }
             //setImage(bitmap);
-            Log.d("pagefragment", "doInBackground done");
+            //Log.d("pagefragment", "doInBackground done");
             return null;
         }
 
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            Log.d("pagefragment", "onPostExecute");
+           // Log.d("pagefragment", "onPostExecute");
             if(mBitmapURI != null) {
                 setImage(mBitmapURI);
-                Log.d("onCreateView resetimg", "setting image" + mBitmapURI);
+                Log.d("onPostExecute setimg", "setting image" + mBitmapURI);
             }
             //bitmap = mBitmap;
-            Log.d("pagefragment", "onPostExecute finished");
+            //Log.d("pagefragment", "onPostExecute finished");
         }
     }
 
@@ -203,6 +348,8 @@ public class PageFragment extends Fragment {
             //new AsyncFetchPage().execute(ARG_PARAM1);
         //}
         Log.d("pagefragment", "view created");
+        String href = getArguments().getString("href");
+        new AsyncFetchPage().execute(href);
         return view;
     }
 
