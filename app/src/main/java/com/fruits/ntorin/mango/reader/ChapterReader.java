@@ -329,6 +329,14 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         return super.onTouchEvent(event);
     }
 
+    public int getChapterNumber(){
+        int intkey = getIntent().getIntExtra("chno", 1);
+        HashMap map = (HashMap) getIntent().getSerializableExtra("chlist");
+        int totalChapters = map.keySet().size();
+        Log.d("getChapterNumber", "returned " + (totalChapters - intkey + 1));
+        return totalChapters - intkey + 1;
+    }
+
     public class AsyncGetPages extends AsyncTask<Void, Void, Void> {
 
         Chapter item;
@@ -388,6 +396,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
 
             Log.d("toChapterReader", item.content);
             startActivity(intent);
+            finish();
 
 
             return null;
@@ -432,7 +441,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             }else{
                 //Log.d("PageFragment getItem", "not yet," + position + " " + mPages);
             }
-            return PageFragment.newInstance(mPageURLs[position]);
+            return PageFragment.newInstance(mPageURLs[position], getChapterNumber());
         }
 
 

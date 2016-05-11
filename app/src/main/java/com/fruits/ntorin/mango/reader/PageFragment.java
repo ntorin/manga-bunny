@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
@@ -68,6 +69,8 @@ public class PageFragment extends Fragment {
     private float mLastTouchY;
     private float mPosX;
     private float mPosY;
+    private FragmentActivity mFragmentActivity;
+    private File mFile;
 
 
     public PageFragment() {
@@ -84,10 +87,11 @@ public class PageFragment extends Fragment {
      * @return A new instance of fragment PageFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PageFragment newInstance(String href) {
+    public static PageFragment newInstance(String href, int chno) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putString("href", href);
+        args.putInt("chno", chno);
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,6 +104,7 @@ public class PageFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        mFragmentActivity = getActivity();
         setHasOptionsMenu(true);
     }
 
@@ -224,8 +229,9 @@ public class PageFragment extends Fragment {
     @Override
     public void onDestroy() {
         Log.d("mFileName", "" + mFileName);
-        File file = getActivity().getFileStreamPath(mFileName);
-        file.delete();
+        if(mFile != null) {
+            mFile.delete();
+        }
         super.onDestroy();
         //Log.d("pagefragment", "PageFragment destroyed");
     }
@@ -272,13 +278,15 @@ public class PageFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ajax_loader);
+            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ajax_loader); // FIXME: 5/7/2016 java.lang.NullPointerException: Attempt to invoke virtual method 'android.graphics.drawable.Drawable android.content.Context.getDrawable(int)' on a null object reference
+
             mImageView.setImageDrawable(drawable);
         }
 
         @Override
         protected Void doInBackground(String... params) {
             //Log.d("pagefragment", "doInBackground");
+            href = params[0];
             Document document = null;
             try {
                 Log.d("checkurl", params[0]);
@@ -289,12 +297,18 @@ public class PageFragment extends Fragment {
             Element li = document.getElementById("image");
             String bmpURL = li.attr("src");
             //Log.d("test", "" + li.);
-            bitmap = getBitmapFromURL(bmpURL);
+            try {
+                bitmap = getBitmapFromURL(bmpURL);
+            } catch (IOException e) {
+                cancel(true);
+                //e.printStackTrace();
+            }
             mBitmapURI = null;
 
 
-            mFileName += document.title();
+            mFileName = document.title();
             Log.d("pagetitle", mFileName);
+            mFile = null;
 
             if(bitmap != null) {
                 try {
@@ -305,7 +319,8 @@ public class PageFragment extends Fragment {
 
 
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    mBitmapURI = getActivity().getFileStreamPath(mFileName).toURI().toString();
+                    mFile = getActivity().getFileStreamPath(mFileName);
+                    mBitmapURI = mFile.toURI().toString();
                     Log.d("filepathURI", "" + mBitmapURI);
                     fos.close();
                 } catch (IOException e) {
@@ -327,6 +342,12 @@ public class PageFragment extends Fragment {
             }
             //bitmap = mBitmap;
             //Log.d("pagefragment", "onPostExecute finished");
+        }
+
+        @Override
+        protected void onCancelled() {
+            new AsyncFetchPage().execute(href);
+            super.onCancelled();
         }
     }
 

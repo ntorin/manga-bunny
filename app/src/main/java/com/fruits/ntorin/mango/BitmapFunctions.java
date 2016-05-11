@@ -20,7 +20,7 @@ public class BitmapFunctions {
 
     private static final int IO_BUFFER_SIZE = 4 * 1024;
 
-    public static Bitmap getBitmapFromURL(String url) {
+    public static Bitmap getBitmapFromURL(String url) throws IOException {
         Bitmap bitmap = null;
         InputStream in = null;
         BufferedOutputStream out = null;
@@ -37,8 +37,8 @@ public class BitmapFunctions {
             bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
         } catch (IOException e) {
             Log.e("e", "Could not load Bitmap from: " + url);
-            Log.d("retry", "Second attempt");
-            getBitmapFromURL(url);
+            Log.d("stopping", "throwing error");
+            throw new IOException();
         } finally {
             closeStream(in);
             closeStream(out);

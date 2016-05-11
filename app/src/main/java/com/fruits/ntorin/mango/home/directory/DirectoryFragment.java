@@ -1,6 +1,8 @@
 package com.fruits.ntorin.mango.home.directory;
 
 import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +11,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,12 +29,18 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.fruits.ntorin.mango.SettingsDialogFragment;
+import com.fruits.ntorin.mango.home.AppHome;
 import com.fruits.ntorin.mango.title.DescriptionChapters;
 import com.fruits.ntorin.mango.R;
 import com.fruits.ntorin.mango.database.DirectoryContract;
 import com.fruits.ntorin.mango.database.DirectoryDbHelper;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 
 /**
@@ -42,24 +52,41 @@ import com.fruits.ntorin.mango.database.DirectoryDbHelper;
  * create an instance of this fragment.
  */
 public class DirectoryFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    AbsListView absListView;
+    private AbsListView absListView;
 
-    SimpleCursorAdapter simpleCursorAdapter;
-    DirectoryAdapter directoryAdapter;
-    DirectoryDbHelper ddbHelper;
+    private SimpleCursorAdapter simpleCursorAdapter;
+    private DirectoryAdapter directoryAdapter;
+    private DirectoryDbHelper ddbHelper;
     private View mView;
     private LayoutInflater mInflater;
     private EditText mFilterText;
+    private String searchString;
+    private String pickSource = DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME;
+    private String sortBy = DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME;
+    private ArrayList<String> genres;
+
+    public int getPickSourceRadioID() {
+        return pickSourceRadioID;
+    }
+
+    public void setPickSourceRadioID(int pickSourceRadioID) {
+        this.pickSourceRadioID = pickSourceRadioID;
+    }
+
+    public int getSortByRadioID() {
+        return sortByRadioID;
+    }
+
+    public void setSortByRadioID(int sortByRadioID) {
+        this.sortByRadioID = sortByRadioID;
+    }
+
+    private int pickSourceRadioID;
+    private int sortByRadioID;
+
+
 
     public DirectoryFragment() {
         // Required empty public constructor
@@ -69,17 +96,11 @@ public class DirectoryFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment DirectoryFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DirectoryFragment newInstance(String param1, String param2) {
+    public static DirectoryFragment newInstance() {
         DirectoryFragment fragment = new DirectoryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -89,14 +110,9 @@ public class DirectoryFragment extends Fragment {
 
         ddbHelper = new DirectoryDbHelper(this.getContext());
 
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
         setHasOptionsMenu(true);
         Log.d("DirectoryFragment", "onCreate run Async ");
-        new AsyncFetchDirectory(this).execute(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME);
+        new AsyncFetchDirectory(this).execute(pickSource);
     }
 
     @Override
@@ -120,10 +136,6 @@ public class DirectoryFragment extends Fragment {
                 return true;
 
             case R.id.action_search:
-
-
-
-
                 return true;
 
             case R.id.list_view:
@@ -147,7 +159,6 @@ public class DirectoryFragment extends Fragment {
                 mView.findViewById(R.id.directory_grid).setVisibility(View.VISIBLE);
                 Log.d("togrid", "request grid");
                 return true;
-
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -190,6 +201,7 @@ public class DirectoryFragment extends Fragment {
             }
         });
     }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -213,6 +225,7 @@ public class DirectoryFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
 
     private class AsyncUpdateDirectory extends AsyncTask<Void, Void, Void>{
         @Override
@@ -251,13 +264,14 @@ public class DirectoryFragment extends Fragment {
 
         @Override
         protected void onProgressUpdate(final String... tableName) {
+            pickSource = tableName[0];
             String[] from = {DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE};
-            int[] to = {R.id.site_search_content};
+            final int[] to = {R.id.site_search_content};
             Cursor selectQuery = db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
                     DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
                     DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
                     DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
-                    tableName[0], null);
+                    pickSource, null);
 
 
             directoryAdapter = new DirectoryAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
@@ -265,12 +279,14 @@ public class DirectoryFragment extends Fragment {
             FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
                 @Override
                 public Cursor runQuery(CharSequence constraint) {
-                    return db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
+                    searchString = constraint.toString();
+                    return db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry._ID + ", " + // TODO: 5/11/2016 does not take into account genre filtering. fix; make query a separate string, and foreach the genres in
                             DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
                             DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
                             DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
-                            tableName[0] + " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
-                            + " LIKE '%" + constraint.toString() + "%'", null);
+                            pickSource + " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
+                            + " LIKE '%" + searchString + "%' ORDER BY " +
+                            sortBy + " ASC", null);
                 }
             };
             directoryAdapter.setFilterQueryProvider(filterQueryProvider);
@@ -304,9 +320,62 @@ public class DirectoryFragment extends Fragment {
     }
 
     public void ConfigureSearch(){
-        Dialog dialog = new Dialog(getContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        dialog.setContentView(R.layout.activity_app_home);
-        dialog.show();
+        Bundle bundle = new Bundle();
+        bundle.putInt("sortByID", getSortByRadioID());
+        bundle.putInt("pickSourceID", getPickSourceRadioID());
+        DialogFragment dialog = new SettingsDialogFragment();
+        dialog.setArguments(bundle);
+        AppHome appHome = (AppHome) getActivity();
+        appHome.setFragmentCalled(this);
+        //dialog.set(DialogFragment.STYLE_NORMAL, R.style.AppTheme);
+        dialog.show(getActivity().getFragmentManager(), "test");
+    }
+
+    public void requeryFromConfigure(String sortBy, String pickSource, ArrayList<String> genres){
+        this.pickSource = pickSource;
+        this.sortBy = sortBy;
+        this.genres = genres;
+        SQLiteDatabase db = ddbHelper.getWritableDatabase();
+
+        String requeryString = "SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
+                pickSource;
+
+        if(searchString != null) {
+            requeryString += " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
+                    + " LIKE '%" + searchString + "%'";
+        }
+
+        if(!genres.isEmpty()) {
+            if (searchString == null) {
+                requeryString += " WHERE ";
+            } else {
+                requeryString += " AND ";
+            }
+        }
+
+        for(String genre : genres){
+
+            requeryString += DirectoryContract.DirectoryEntry.COLUMN_NAME_GENRES
+                    + " LIKE '%" + genre + "%'";
+
+            if(genres.indexOf(genre) != genres.size() - 1){
+                requeryString += " AND ";
+            }
+        }
+
+        requeryString += " ORDER BY " +
+                sortBy + " ASC";
+        Log.d("requeryFromConfigure", requeryString);
+        Cursor requery = db.rawQuery(requeryString, null);
+
+        directoryAdapter.changeCursor(requery);
+        simpleCursorAdapter.changeCursor(requery);
+        simpleCursorAdapter.notifyDataSetChanged();
+        directoryAdapter.notifyDataSetChanged();
+
     }
 
     /**

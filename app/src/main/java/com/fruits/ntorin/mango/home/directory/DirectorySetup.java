@@ -147,7 +147,12 @@ public class DirectorySetup {
 
             Element imgElement = titlePage.getElementsByClass("img").first();
             String bmpURL = imgElement.attr("src");
-            Bitmap cover = getBitmapFromURL(bmpURL);
+            Bitmap cover = null;
+            try {
+                cover = getBitmapFromURL(bmpURL);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             String coverURI = null;
             if(cover != null) {
                 FileOutputStream fos = null;

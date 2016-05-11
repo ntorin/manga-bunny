@@ -1,5 +1,6 @@
 package com.fruits.ntorin.mango.home;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
@@ -11,15 +12,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.fruits.ntorin.mango.FullscreenActivity;
+import com.fruits.ntorin.mango.SettingsDialogFragment;
 import com.fruits.ntorin.mango.home.directory.DirectoryFragment;
 import com.fruits.ntorin.mango.home.downloads.DownloadsFragment;
 import com.fruits.ntorin.mango.home.explore.ExploreFragment;
@@ -29,12 +33,15 @@ import com.fruits.ntorin.mango.R;
 import com.fruits.ntorin.mango.Settings;
 import com.fruits.ntorin.mango.dummy.DummyContent;
 
+import java.util.ArrayList;
+
 public class AppHome extends AppCompatActivity
         implements DirectoryFragment.OnFragmentInteractionListener,
         FavoritesFragment.OnFragmentInteractionListener,
         ExploreFragment.OnFragmentInteractionListener,
         HistoryFragment.OnFragmentInteractionListener,
-        DownloadsFragment.OnFragmentInteractionListener {
+        DownloadsFragment.OnFragmentInteractionListener,
+        SettingsDialogFragment.SettingsDialogListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -50,6 +57,7 @@ public class AppHome extends AppCompatActivity
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Fragment mFragmentCalled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +122,27 @@ public class AppHome extends AppCompatActivity
 
     }
 
+    @Override
+    public void onItemClick(SettingsDialogFragment dialog) {
+        String sortBy = dialog.getSortBy().getText().toString();
+        String pickSource = dialog.getPickSource().getText().toString();
+        CheckBox[] genres = dialog.getGenres();
+        ArrayList<String> checkedGenres = new ArrayList<>();
+        for (CheckBox genre : genres) {
+            if (genre.isChecked()) {
+                checkedGenres.add(genre.getText().toString());
+            }
+        }
+        DirectoryFragment directoryFragment = (DirectoryFragment) mFragmentCalled;
+        directoryFragment.setPickSourceRadioID(dialog.getPickSource().getId());
+        directoryFragment.setSortByRadioID(dialog.getSortBy().getId());
+        directoryFragment.requeryFromConfigure(sortBy, pickSource, checkedGenres);
+    }
+
+    public void setFragmentCalled(Fragment f){
+        mFragmentCalled = f;
+    };
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -149,6 +178,10 @@ public class AppHome extends AppCompatActivity
         }
     }
 
+    public void SearchSettings(View view){
+
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -166,7 +199,7 @@ public class AppHome extends AppCompatActivity
 
             switch (position) {
                 case 0:
-                    return DirectoryFragment.newInstance("", "");
+                    return DirectoryFragment.newInstance();
                 case 1:
                     return FavoritesFragment.newInstance("", "");
                 case 2:

@@ -11,6 +11,7 @@
         <item name="android:textColorPrimary">@color/primary_text_material_light</item>
         <item name="android:textColorSecondary">@color/secondary_text_material_light</item>
         <item name="android:textColorSecondaryInverse">@color/secondary_text_material_dark</item>
+        <item name="android:alertDialogTheme">@style/AlertDialog.AppCompat</item>
     </style>
 
 
@@ -64,6 +65,22 @@
         <item name="android:colorForeground">@color/foreground_material_light</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+
+
+    <style name="DialogStyle" parent="@android:style/Theme.Dialog">
+    <!-- changing these background stuff works fine -->
+    <item name="android:bottomBright">@android:color/white</item>
+    <item name="android:bottomDark">@android:color/white</item>
+    <item name="android:bottomMedium">#000000</item>
+    <item name="android:centerBright">@android:color/white</item>
+    <item name="android:centerDark">#000000</item>
+    <item name="android:centerMedium">@android:color/white</item>
+    <item name="android:fullBright">#000000</item>
+    <item name="android:fullDark">#000000</item>
+    <item name="android:topBright">#000000</item>
+    <item name="android:topDark">#000000</item>
     </style>
 
 </resources>
