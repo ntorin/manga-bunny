@@ -7,71 +7,89 @@
     <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:weightSum="1">
 
         <RadioGroup
+            android:id="@+id/pickSourceGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/pickSourceGroup">
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mangafox"
-                android:onClick="SearchSettings"/>
+            android:orientation="horizontal">
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MangaHere"
+                android:onClick="SearchSettings"
+                android:text="Mangafox" />
+
+            <RadioButton
                 android:id="@+id/pickSourceDefault"
-                android:onClick="SearchSettings"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="SearchSettings"
+                android:text="MangaHere" />
+
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Batoto"
-                android:onClick="SearchSettings"/>
+                android:onClick="SearchSettings"
+                android:text="Batoto" />
         </RadioGroup>
 
         <RadioGroup
+            android:id="@+id/sortByGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/sortByGroup">
+            android:orientation="horizontal">
+
             <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="title"
                 android:id="@+id/sortByDefault"
-                android:onClick="SearchSettings"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="SearchSettings"
+                android:text="title" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="rank"
-                android:onClick="SearchSettings"/>
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="radioTest"
-                android:id="@+id/radioTest"
-                android:onClick="SearchSettings"/>
+                android:onClick="SearchSettings"
+                android:text="rank" />
         </RadioGroup>
-    </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/genreList"
-        android:weightSum="1">
 
-        <CheckBox
+        <ScrollView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="text"/>
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/genreList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/genreListLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"></LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/genreListCenter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"></LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/genreListRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"></LinearLayout>
+            </LinearLayout>
+
+        </ScrollView>
+
+
     </LinearLayout>
+
 </RelativeLayout>

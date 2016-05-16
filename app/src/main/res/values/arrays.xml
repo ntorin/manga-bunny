@@ -3,18 +3,118 @@
     <string-array name="search_sort_by" />
 
     <string-array name="Mangafox">
-        <item></item>
-        <item></item>
+        <item>Action</item>
+        <item>Adult</item>
+        <item>Adventure</item>
+        <item>Comedy</item>
+        <item>Doujinshi</item>
+        <item>Drama</item>
+        <item>Ecchi</item>
+        <item>Fantasy</item>
+        <item>Gender Bender</item>
+        <item>Harem</item>
+        <item>Historical</item>
+        <item>Horror</item>
+        <item>Josei</item>
+        <item>Martial Arts</item>
+        <item>Mature</item>
+        <item>Mecha</item>
+        <item>Mystery</item>
+        <item>One Shot</item>
+        <item>Psychological</item>
+        <item>Romance</item>
+        <item>School Life</item>
+        <item>Sci-fi</item>
+        <item>Seinen</item>
+        <item>Shoujo</item>
+        <item>Shoujo Ai</item>
+        <item>Shounen</item>
+        <item>Shounen Ai</item>
+        <item>Slice of Life</item>
+        <item>Smut</item>
+        <item>Sports</item>
+        <item>Supernatural</item>
+        <item>Tragedy</item>
+        <item>Webtoons</item>
+        <item>Yaoi</item>
+        <item>Yuri</item>
     </string-array>
 
     <string-array name="MangaHere">
-        <item>Romance</item>
         <item>Action</item>
+        <item>Adventure</item>
+        <item>Comedy</item>
+        <item>Doujinshi</item>
+        <item>Drama</item>
+        <item>Ecchi</item>
+        <item>Fantasy</item>
+        <item>Gender Bender</item>
+        <item>Harem</item>
+        <item>Historical</item>
+        <item>Horror</item>
+        <item>Josei</item>
+        <item>Martial Arts</item>
+        <item>Mature</item>
+        <item>Mecha</item>
+        <item>Mystery</item>
+        <item>One Shot</item>
+        <item>Psychological</item>
+        <item>Romance</item>
+        <item>School Life</item>
+        <item>Sci-fi</item>
+        <item>Seinen</item>
+        <item>Shoujo</item>
+        <item>Shoujo Ai</item>
+        <item>Shounen</item>
+        <item>Shounen Ai</item>
+        <item>Slice of Life</item>
+        <item>Sports</item>
+        <item>Supernatural</item>
+        <item>Tragedy</item>
+        <item>Yaoi</item>
+        <item>Yuri</item>
     </string-array>
 
     <string-array name="Batoto">
-        <item></item>
-        <item></item>
+        <item>4-Koma</item>
+        <item>Action</item>
+        <item>Adventure</item>
+        <item>Award Winning</item>
+        <item>Comedy</item>
+        <item>Cooking</item>
+        <item>Doujinshi</item>
+        <item>Drama</item>
+        <item>Ecchi</item>
+        <item>Fantasy</item>
+        <item>Gender Bender</item>
+        <item>Harem</item>
+        <item>Historical</item>
+        <item>Horror</item>
+        <item>Josei</item>
+        <item>Martial Arts</item>
+        <item>Mecha</item>
+        <item>Medical</item>
+        <item>Music</item>
+        <item>Mystery</item>
+        <item>Oneshot</item>
+        <item>Psychological</item>
+        <item>Romance</item>
+        <item>School Life</item>
+        <item>Sci-fi</item>
+        <item>Seinen</item>
+        <item>Shoujo</item>
+        <item>Shoujo Ai</item>
+        <item>Shounen</item>
+        <item>Shounen Ai</item>
+        <item>Slice of Life</item>
+        <item>Smut</item>
+        <item>Sports</item>
+        <item>Supernatural</item>
+        <item>Tragedy</item>
+        <item>Webtoon</item>
+        <item>Yaoi</item>
+        <item>Yuri</item>
+        <item>[no chapters]</item>
     </string-array>
 
 </resources>

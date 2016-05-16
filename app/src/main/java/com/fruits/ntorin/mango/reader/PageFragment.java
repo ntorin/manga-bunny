@@ -293,6 +293,7 @@ public class PageFragment extends Fragment {
                 document = Jsoup.connect(params[0]).get();
             } catch (IOException e) {
                 e.printStackTrace();
+                this.cancel(true);
             }
             Element li = document.getElementById("image");
             String bmpURL = li.attr("src");
@@ -327,7 +328,6 @@ public class PageFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-            //setImage(bitmap);
             //Log.d("pagefragment", "doInBackground done");
             return null;
         }
@@ -339,6 +339,8 @@ public class PageFragment extends Fragment {
             if(mBitmapURI != null) {
                 setImage(mBitmapURI);
                 Log.d("onPostExecute setimg", "setting image" + mBitmapURI);
+            }else{
+                this.cancel(true);
             }
             //bitmap = mBitmap;
             //Log.d("pagefragment", "onPostExecute finished");
