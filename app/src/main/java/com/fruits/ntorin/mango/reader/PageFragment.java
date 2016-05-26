@@ -5,12 +5,15 @@ import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.fruits.ntorin.mango.R;
+import com.soundcloud.android.crop.Crop;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -128,6 +132,11 @@ public class PageFragment extends Fragment {
             case R.id.action_bookmark:
                 return true;
             case R.id.action_crop:
+                if(mBitmapURI != null){
+                    Uri uri = Uri.parse(mBitmapURI);
+                    Crop.of(uri, uri).withAspect(50, 50).start(getActivity());
+
+                }
                 return true;
             case R.id.action_share_page:
                 CopyPageURL();
@@ -354,6 +363,21 @@ public class PageFragment extends Fragment {
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Crop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
+            saveCroppedImage(Uri.parse(mBitmapURI));
+        }
+    }
+
+    private void saveCroppedImage(Uri resultUri) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), resultUri);
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "MangoCrop");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Override

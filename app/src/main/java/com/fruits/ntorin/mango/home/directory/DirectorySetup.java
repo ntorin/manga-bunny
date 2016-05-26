@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.fruits.ntorin.mango.database.DirectoryContract;
+import com.fruits.ntorin.mango.database.DirectoryDbHelper;
+import com.fruits.ntorin.mango.datastore.DatastoreFunctions;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -41,7 +43,7 @@ public class DirectorySetup {
             Log.d("mfoxsetup", "connected");
             Elements li = document.getElementById("page").getElementsByClass("series_preview");
             Iterator i = li.iterator();
-            int c = 0;
+            int c = getDBRows(db, DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME);
             Log.d("mfoxsetup", "filling db");
             for(Element element : li){
                 Element title = element;
@@ -62,6 +64,7 @@ public class DirectorySetup {
     }
 
     public static void MangaHereSetup(SQLiteDatabase db, Context context) {
+        DirectoryDbHelper dbHelper = new DirectoryDbHelper(context);
         ContentValues values = new ContentValues();
 
         Log.d("mheresetup", "executing setup");
@@ -74,12 +77,17 @@ public class DirectorySetup {
             Iterator i = li.iterator();
             int c = 0;
             Log.d("mheresetup", "filling db");
-            db.delete(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME, null, null); //// FIXME: 4/5/2016 potential issues here if connection is lost?
+            //db.delete(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME, null, null); //// FIXME: 4/5/2016 potential issues here if connection is lost?
             for(Element element : li) {
                 Element title = element;
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, title.attr("rel"));
                 values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, title.attr("href"));
-                MangaHereGetDetailedInfo(values, title.attr("href"), c, db, context);
+                if(checkIfExists(dbHelper.getReadableDatabase(), DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME, title.attr("href")) == false) {
+                    MangaHereGetDetailedInfoStore(values, title.attr("href"), c, db, context);
+                }else{
+                    Log.d("MangaHereSetup", "title " + title.attr("rel") +
+                            "(" + title.attr("href") + ") already exists in db; skipping");
+                }
                 c++;
                 if(c > 10){ //// FIXME testing purposes
                     return;
@@ -96,6 +104,35 @@ public class DirectorySetup {
 
         // Document document = Jsoup.connect("").get(); //// FIXME: 3/19/2016
 
+    }
+
+    private static int getDBRows(SQLiteDatabase db, String tableName) {
+        Cursor cursor = db.rawQuery("SELECT * FROM " + tableName, null);
+        return cursor.getCount();
+    }
+
+    public static boolean checkIfExists(SQLiteDatabase db, String source, String href){
+        Cursor cursor = db.rawQuery("SELECT " + DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
+                source + " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF
+                + "=\'" + href + "\'", null);
+        if(cursor != null && cursor.moveToFirst()) {
+
+            String coverURI = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER));
+
+            Log.d("covercheck", "cover: " + coverURI);
+
+
+            if (cursor.getCount() != 0 && coverURI != null) {
+                db.close();
+                cursor.close();
+                return true;
+            }
+        }
+
+        db.close();
+        cursor.close();
+        return false;
     }
 
     public static void MangaHereGetDetailedInfo(ContentValues values, String href, int coverCounter, SQLiteDatabase db, Context context){
@@ -116,64 +153,151 @@ public class DirectorySetup {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(titlePage.getElementsByClass("detail_topText").first() != null) {
-            Elements titleInfo = titlePage.getElementsByClass("detail_topText").first().children();
+        if(titlePage != null) {
+            if (titlePage.getElementsByClass("detail_topText").first() != null) {
+                Elements titleInfo = titlePage.getElementsByClass("detail_topText").first().children();
 
-            String genres = titleInfo.get(3).ownText();
-            Log.d("mheresetup", "genres: " + genres);
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_GENRES, genres);
+                String genres = titleInfo.get(3).ownText();
+                Log.d("mheresetup", "genres: " + genres);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_GENRES, genres);
 
-            String author = "Unknown";
-            if (titleInfo.get(4).getElementsByTag("a").first() != null) {
-                author = titleInfo.get(4).getElementsByTag("a").first().text();
-            }
-            Log.d("mheresetup", "author: " + author);
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_AUTHOR, author);
-
-            String artist = "Unknown";
-            if (titleInfo.get(5).getElementsByTag("a").first() != null) {
-                artist = titleInfo.get(5).getElementsByTag("a").first().text();
-            }
-            Log.d("mheresetup", "artist: " + artist);
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_ARTIST, artist);
-
-            String status = titleInfo.get(6).ownText();
-            Log.d("mheresetup", "status: " + status);
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_STATUS, status);
-
-            String rank = titleInfo.get(7).ownText();
-            Log.d("mheresetup", "rank: " + rank);
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_RANK, rank);
-
-            Element imgElement = titlePage.getElementsByClass("img").first();
-            String bmpURL = imgElement.attr("src");
-            Bitmap cover = null;
-            try {
-                cover = getBitmapFromURL(bmpURL);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String coverURI = null;
-            if(cover != null) {
-                FileOutputStream fos = null;
-                try {
-                    fos = context.openFileOutput("cover" + coverCounter, Context.MODE_PRIVATE);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                String author = "Unknown";
+                if (titleInfo.get(4).getElementsByTag("a").first() != null) {
+                    author = titleInfo.get(4).getElementsByTag("a").first().text();
                 }
-                cover.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                coverURI = context.getFileStreamPath("cover" + coverCounter).toURI().toString();
-                Log.d("filepathURI", "" + coverURI);
+                Log.d("mheresetup", "author: " + author);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_AUTHOR, author);
+
+                String artist = "Unknown";
+                if (titleInfo.get(5).getElementsByTag("a").first() != null) {
+                    artist = titleInfo.get(5).getElementsByTag("a").first().text();
+                }
+                Log.d("mheresetup", "artist: " + artist);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_ARTIST, artist);
+
+                String status = titleInfo.get(6).ownText();
+                Log.d("mheresetup", "status: " + status);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_STATUS, status);
+
+                String rank = titleInfo.get(7).ownText();
+                Log.d("mheresetup", "rank: " + rank);
+                Log.d("rankint", "" + rank.substring(0, (rank.length() - 2)));
+                int rankint = Integer.parseInt(rank.substring(0, (rank.length() - 2)));
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_RANK, rank);
+
+                Element imgElement = titlePage.getElementsByClass("img").first();
+                String bmpURL = imgElement.attr("src");
+                Bitmap cover = null;
                 try {
-                    fos.close();
+                    cover = getBitmapFromURL(bmpURL);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER, coverURI);
+                String coverURI = null;
+                if (cover != null) {
+                    FileOutputStream fos = null;
+                    try {
+                        fos = context.openFileOutput("cover" + coverCounter, Context.MODE_PRIVATE);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    cover.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    coverURI = context.getFileStreamPath("cover" + coverCounter).toURI().toString();
+                    Log.d("filepathURI", "" + coverURI);
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER, coverURI);
 
-            Log.d("mheresetup", "titlePage " + href + " connected");
-            db.insert(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME, null, values);
+                Log.d("mheresetup", "titlePage " + href + " connected");
+                db.insert(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME, null, values);
+            }
+        }
+    }
+
+    public static void MangaHereGetDetailedInfoStore(ContentValues values, String href, int coverCounter, SQLiteDatabase db, Context context){
+        Log.d("mheresetup", "titlePage " + href + " connecting");
+        Document titlePage = null;
+        try {
+            titlePage = Jsoup.connect(href).get();
+        }catch(SocketTimeoutException e){
+            Log.d("mheresetup", "first timeout");
+            try {
+                titlePage = Jsoup.connect(href).get();
+            }catch(SocketTimeoutException ee){
+                Log.d("mheresetup", "second timeout continue");
+                return;
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(titlePage != null) {
+            if (titlePage.getElementsByClass("detail_topText").first() != null) {
+                Elements titleInfo = titlePage.getElementsByClass("detail_topText").first().children();
+
+                String genres = titleInfo.get(3).ownText();
+                Log.d("mheresetup", "genres: " + genres);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_GENRES, genres);
+
+                String author = "Unknown";
+                if (titleInfo.get(4).getElementsByTag("a").first() != null) {
+                    author = titleInfo.get(4).getElementsByTag("a").first().text();
+                }
+                Log.d("mheresetup", "author: " + author);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_AUTHOR, author);
+
+                String artist = "Unknown";
+                if (titleInfo.get(5).getElementsByTag("a").first() != null) {
+                    artist = titleInfo.get(5).getElementsByTag("a").first().text();
+                }
+                Log.d("mheresetup", "artist: " + artist);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_ARTIST, artist);
+
+                String status = titleInfo.get(6).ownText();
+                Log.d("mheresetup", "status: " + status);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_STATUS, status);
+
+                String rank = titleInfo.get(7).ownText();
+                int rankint = Integer.parseInt(rank.substring(0, (rank.length() - 2)));
+                Log.d("rankint", "" + rankint);
+                Log.d("mheresetup", "rank: " + rank);
+                values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_RANK, rankint);
+
+                Element imgElement = titlePage.getElementsByClass("img").first();
+                String bmpURL = imgElement.attr("src");
+                Bitmap cover = null;
+                try {
+                    cover = getBitmapFromURL(bmpURL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String coverURI = null;
+                if (cover != null) {
+                    FileOutputStream fos = null;
+                    try {
+                        fos = context.openFileOutput("cover" + coverCounter, Context.MODE_PRIVATE);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    cover.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    coverURI = context.getFileStreamPath("cover" + coverCounter).toURI().toString();
+                    Log.d("filepathURI", "" + coverURI);
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //DatastoreFunctions.addTitle(values);
+
+                Log.d("mheresetup", "titlePage " + href + " connected");
+                db.insert(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME, null, values);
+            }
         }
     }
 

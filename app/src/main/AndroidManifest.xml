@@ -34,14 +34,18 @@
             android:label="@string/title_activity_chapter_reader"
             android:theme="@style/ReaderTheme.NoActionBar"
             android:uiOptions="splitActionBarWhenNarrow">
-            <meta-data android:name="android.support.UI_OPTIONS"
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
             android:name=".FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
+
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+
     </application>
 
 </manifest>

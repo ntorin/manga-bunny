@@ -193,4 +193,6 @@
     <string name="action_favorite_title">Add to favorites</string>
     <string name="action_unfavorite_title">Remove from favorites</string>
     <string name="settings_dialog_message">Configure Search Settings</string>
+    <string name="fillDB">Fill Database</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>

@@ -68,6 +68,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private View mView;
     private int mPages;
     private String mHref;
     private String[] mPageURLs;
@@ -81,6 +82,9 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
     private float mDragX;
     private Map<String, Chapter> mMap;
     private boolean backFlag = false;
+
+    private int nextCh;
+    private int prevCh = 0;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -104,6 +108,8 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         mPages = intent.getIntExtra("pages", 1);
         mHref = intent.getStringExtra("href");
         mPageURLs = intent.getStringArrayExtra("pageURLs");
+
+        nextCh = mPages - 1;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -153,8 +159,6 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         switch(id){
             case R.id.action_left_to_right:
                 return true;
@@ -215,7 +219,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
     public boolean onTouchEvent(MotionEvent event) {
         final int action = MotionEventCompat.getActionMasked(event);
 
-        if(mViewPager.getCurrentItem() == 0) {
+        if(mViewPager.getCurrentItem() == prevCh) {
             switch (action) {
                 case MotionEvent.ACTION_DOWN: {
                     Log.d("ChapterReaderMotion", "ACTION_DOWN");
@@ -270,7 +274,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             }
         }
 
-        if(mViewPager.getCurrentItem() == mPages - 1) {
+        if(mViewPager.getCurrentItem() == nextCh) {
             switch (action) {
                 case MotionEvent.ACTION_DOWN: {
                     Log.d("ChapterReaderMotion", "ACTION_DOWN");

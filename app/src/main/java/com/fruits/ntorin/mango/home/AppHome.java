@@ -1,6 +1,5 @@
 package com.fruits.ntorin.mango.home;
 
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
@@ -12,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,15 +21,15 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.fruits.ntorin.mango.FullscreenActivity;
-import com.fruits.ntorin.mango.SettingsDialogFragment;
 import com.fruits.ntorin.mango.home.directory.DirectoryFragment;
 import com.fruits.ntorin.mango.home.downloads.DownloadsFragment;
 import com.fruits.ntorin.mango.home.explore.ExploreFragment;
 import com.fruits.ntorin.mango.home.favorites.FavoritesFragment;
 import com.fruits.ntorin.mango.home.history.HistoryFragment;
 import com.fruits.ntorin.mango.R;
-import com.fruits.ntorin.mango.Settings;
 import com.fruits.ntorin.mango.dummy.DummyContent;
+//import com.google.cloud.datastore.Datastore;
+//import com.google.cloud.datastore.DatastoreOptions;
 
 import java.util.ArrayList;
 
@@ -59,6 +57,7 @@ public class AppHome extends AppCompatActivity
     private ViewPager mViewPager;
     private Fragment mFragmentCalled;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,12 +71,19 @@ public class AppHome extends AppCompatActivity
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(10);
+        if (mViewPager != null) {
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+            mViewPager.setOffscreenPageLimit(10);
+        }
 
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        if (tabLayout != null) {
+            tabLayout.setupWithViewPager(mViewPager);
+        }
+
+        //Datastore datastore = DatastoreOptions.defaultInstance().service();
+
 
         /*tabLayout.getTabAt(0).setIcon(imageResId[0]);
         tabLayout.getTabAt(1).setIcon(imageResId[1]);

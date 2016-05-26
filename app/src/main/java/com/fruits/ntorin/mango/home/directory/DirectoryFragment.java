@@ -1,8 +1,6 @@
 package com.fruits.ntorin.mango.home.directory;
 
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -11,10 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -29,18 +25,16 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.fruits.ntorin.mango.SettingsDialogFragment;
-import com.fruits.ntorin.mango.home.AppHome;
-import com.fruits.ntorin.mango.title.DescriptionChapters;
 import com.fruits.ntorin.mango.R;
+import com.fruits.ntorin.mango.home.SettingsDialogFragment;
 import com.fruits.ntorin.mango.database.DirectoryContract;
 import com.fruits.ntorin.mango.database.DirectoryDbHelper;
+import com.fruits.ntorin.mango.home.AppHome;
+import com.fruits.ntorin.mango.title.DescriptionChapters;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 
 /**
@@ -66,27 +60,8 @@ public class DirectoryFragment extends Fragment {
     private String pickSource = DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME;
     private String sortBy = DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME;
     private ArrayList<String> genres;
-
-    public int getPickSourceRadioID() {
-        return pickSourceRadioID;
-    }
-
-    public void setPickSourceRadioID(int pickSourceRadioID) {
-        this.pickSourceRadioID = pickSourceRadioID;
-    }
-
-    public int getSortByRadioID() {
-        return sortByRadioID;
-    }
-
-    public void setSortByRadioID(int sortByRadioID) {
-        this.sortByRadioID = sortByRadioID;
-    }
-
     private int pickSourceRadioID;
     private int sortByRadioID;
-
-
 
     public DirectoryFragment() {
         // Required empty public constructor
@@ -104,6 +79,22 @@ public class DirectoryFragment extends Fragment {
         return fragment;
     }
 
+    public int getPickSourceRadioID() {
+        return pickSourceRadioID;
+    }
+
+    public void setPickSourceRadioID(int pickSourceRadioID) {
+        this.pickSourceRadioID = pickSourceRadioID;
+    }
+
+    public int getSortByRadioID() {
+        return sortByRadioID;
+    }
+
+    public void setSortByRadioID(int sortByRadioID) {
+        this.sortByRadioID = sortByRadioID;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +102,7 @@ public class DirectoryFragment extends Fragment {
         ddbHelper = new DirectoryDbHelper(this.getContext());
 
         setHasOptionsMenu(true);
-        Log.d("DirectoryFragment", "onCreate run Async ");
+        Log.d("DirectoryFragment", "onCreate run Async " + pickSource);
         new AsyncFetchDirectory(this).execute(pickSource);
     }
 
@@ -131,8 +122,12 @@ public class DirectoryFragment extends Fragment {
 
         switch (id) {
             case R.id.action_search_settings:
-               // new AsyncUpdateDirectory().execute();
+                // new AsyncUpdateDirectory().execute();
                 ConfigureSearch();
+                return true;
+
+            case R.id.fillDB:
+                new AsyncFetchDirectory(this).execute(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME);
                 return true;
 
             case R.id.action_search:
@@ -141,7 +136,7 @@ public class DirectoryFragment extends Fragment {
             case R.id.list_view:
                 mView.findViewById(R.id.directory_grid).setVisibility(View.GONE);
                 absListView = (AbsListView) mView.findViewById(R.id.directory_list);
-                if(absListView.getOnItemClickListener() == null){
+                if (absListView.getOnItemClickListener() == null) {
                     setListener();
                 }
                 absListView.setAdapter(simpleCursorAdapter);
@@ -152,7 +147,7 @@ public class DirectoryFragment extends Fragment {
             case R.id.catalog_view:
                 mView.findViewById(R.id.directory_list).setVisibility(View.GONE);
                 absListView = (AbsListView) mView.findViewById(R.id.directory_grid);
-                if(absListView.getOnItemClickListener() == null){
+                if (absListView.getOnItemClickListener() == null) {
                     setListener();
                 }
                 absListView.setAdapter(directoryAdapter);
@@ -181,8 +176,8 @@ public class DirectoryFragment extends Fragment {
     }
 
 
-    public void setListener(){
-        absListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+    public void setListener() {
+        absListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> l, View v, int position, long id) {
                 Intent intent = new Intent(DirectoryFragment.this.getContext(), DescriptionChapters.class);
@@ -226,8 +221,81 @@ public class DirectoryFragment extends Fragment {
         mListener = null;
     }
 
+    public void ConfigureSearch() {
+        Bundle bundle = new Bundle();
+        bundle.putInt("sortByID", getSortByRadioID());
+        bundle.putInt("pickSourceID", getPickSourceRadioID());
+        DialogFragment dialog = new SettingsDialogFragment();
+        dialog.setArguments(bundle);
+        AppHome appHome = (AppHome) getActivity();
+        appHome.setFragmentCalled(this);
+        //dialog.set(DialogFragment.STYLE_NORMAL, R.style.AppTheme);
+        dialog.show(getActivity().getFragmentManager(), "test");
+    }
 
-    private class AsyncUpdateDirectory extends AsyncTask<Void, Void, Void>{
+    public void requeryFromConfigure(String sortBy, String pickSource, ArrayList<String> genres) {
+        this.pickSource = pickSource;
+        this.sortBy = sortBy;
+        this.genres = genres;
+        SQLiteDatabase db = ddbHelper.getWritableDatabase();
+
+        String requeryString = "SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
+                DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
+                pickSource;
+
+        if (searchString != null) {
+            requeryString += " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
+                    + " LIKE '%" + searchString + "%'";
+        }
+
+        if (!genres.isEmpty()) {
+            if (searchString == null) {
+                requeryString += " WHERE ";
+            } else {
+                requeryString += " AND ";
+            }
+        }
+
+        for (String genre : genres) {
+
+            requeryString += DirectoryContract.DirectoryEntry.COLUMN_NAME_GENRES
+                    + " LIKE '%" + genre + "%'";
+
+            if (genres.indexOf(genre) != genres.size() - 1) {
+                requeryString += " AND ";
+            }
+        }
+
+        requeryString += " ORDER BY " +
+                sortBy + " ASC";
+        Log.d("requeryFromConfigure", requeryString);
+        Cursor requery = db.rawQuery(requeryString, null);
+
+        directoryAdapter.changeCursor(requery);
+        simpleCursorAdapter.changeCursor(requery);
+        simpleCursorAdapter.notifyDataSetChanged();
+        directoryAdapter.notifyDataSetChanged();
+
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
+
+    private class AsyncUpdateDirectory extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             DirectorySetup.UpdateDirectory(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME,
@@ -242,21 +310,27 @@ public class DirectoryFragment extends Fragment {
         SQLiteDatabase db = ddbHelper.getWritableDatabase();
         Fragment fragment;
 
-        public AsyncFetchDirectory(Fragment a){
+        public AsyncFetchDirectory(Fragment a) {
             fragment = a;
         }
 
         @Override
         protected Void doInBackground(String... params) {
-            publishProgress(params[0]);
+            //publishProgress(params[0]);
 
-            if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME)){
+            Log.d("AsyncFetchDirectory", "starting");
+            Cursor cursor = db.rawQuery("SELECT count(*) FROM " +
+                    DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME, null);
+
+            if (params[0].equals(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME)) {
                 DirectorySetup.MangafoxSetup(db);
-            }else if(params[0].equals(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME)){
-                DirectorySetup.MangaHereSetup(db, getContext());
-            }else if(params[0].equals(DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME)){
-                DirectorySetup.BatotoSetup(values, db);
-            }
+            } else if (params[0].equals(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME)) {
+                    DirectorySetup.MangaHereSetup(db, getContext());
+                } else if (params[0].equals(DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME)) {
+                        DirectorySetup.BatotoSetup(values, db);
+                    }
+
+
 
             publishProgress(params[0]);
             return null;
@@ -310,92 +384,16 @@ public class DirectoryFragment extends Fragment {
                 }
             });
 
-            if(absListView.equals(mView.findViewById(R.id.directory_grid))) {
+            if (absListView.equals(mView.findViewById(R.id.directory_grid))) {
                 absListView.setAdapter(directoryAdapter);
-            }else{
+            } else {
                 absListView.setAdapter(simpleCursorAdapter);
             }
             Log.d("c", "approached notify");
         }
     }
 
-    public void ConfigureSearch(){
-        Bundle bundle = new Bundle();
-        bundle.putInt("sortByID", getSortByRadioID());
-        bundle.putInt("pickSourceID", getPickSourceRadioID());
-        DialogFragment dialog = new SettingsDialogFragment();
-        dialog.setArguments(bundle);
-        AppHome appHome = (AppHome) getActivity();
-        appHome.setFragmentCalled(this);
-        //dialog.set(DialogFragment.STYLE_NORMAL, R.style.AppTheme);
-        dialog.show(getActivity().getFragmentManager(), "test");
-    }
-
-    public void requeryFromConfigure(String sortBy, String pickSource, ArrayList<String> genres){
-        this.pickSource = pickSource;
-        this.sortBy = sortBy;
-        this.genres = genres;
-        SQLiteDatabase db = ddbHelper.getWritableDatabase();
-
-        String requeryString = "SELECT " + DirectoryContract.DirectoryEntry._ID + ", " +
-                DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE + ", " +
-                DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + ", " +
-                DirectoryContract.DirectoryEntry.COLUMN_NAME_COVER + " FROM " +
-                pickSource;
-
-        if(searchString != null) {
-            requeryString += " WHERE " + DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE
-                    + " LIKE '%" + searchString + "%'";
-        }
-
-        if(!genres.isEmpty()) {
-            if (searchString == null) {
-                requeryString += " WHERE ";
-            } else {
-                requeryString += " AND ";
-            }
-        }
-
-        for(String genre : genres){
-
-            requeryString += DirectoryContract.DirectoryEntry.COLUMN_NAME_GENRES
-                    + " LIKE '%" + genre + "%'";
-
-            if(genres.indexOf(genre) != genres.size() - 1){
-                requeryString += " AND ";
-            }
-        }
-
-        requeryString += " ORDER BY " +
-                sortBy + " ASC";
-        Log.d("requeryFromConfigure", requeryString);
-        Cursor requery = db.rawQuery(requeryString, null);
-
-        directoryAdapter.changeCursor(requery);
-        simpleCursorAdapter.changeCursor(requery);
-        simpleCursorAdapter.notifyDataSetChanged();
-        directoryAdapter.notifyDataSetChanged();
-
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
-
-
-    class DirectoryAdapter extends SimpleCursorAdapter{
+    class DirectoryAdapter extends SimpleCursorAdapter {
 
         public DirectoryAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
             super(context, layout, c, from, to, flags);
