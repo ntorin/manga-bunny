@@ -4,9 +4,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -90,6 +92,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setUiOptions(ActivityInfo.UIOPTION_SPLIT_ACTION_BAR_WHEN_NARROW);
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -111,10 +114,43 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
 
         nextCh = mPages - 1;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
-        getSupportActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
+        Drawable actionBarBackground = new ColorDrawable(Color.parseColor("#FF0000"));
+        actionBarBackground.setAlpha(65);
+
+
+        Toolbar bottomToolbar = (Toolbar) findViewById(R.id.toolbar_reader_bottom);
+        bottomToolbar.inflateMenu(R.menu.menu_chapter_reader);
+        bottomToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                switch(id){
+                    case R.id.action_left_to_right:
+                        return true;
+                    case R.id.action_right_to_left:
+                        return true;
+                    case R.id.action_top_to_bottom:
+                        return true;
+                    case R.id.action_page_jump:
+                        return true;
+                    case R.id.action_more_options:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+
+        Toolbar topToolbar = (Toolbar) findViewById(R.id.toolbar_reader_top);
+        topToolbar.setTitle(intent.getStringExtra("title"));
+        //topToolbar.inflateMenu(R.menu.menu_chapter_reader);
+
+        Toolbar actionBar = (Toolbar) findViewById(R.id.toolbar);
+        //actionBar.setTitle(intent.getStringExtra("title"));
+        setSupportActionBar(actionBar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        //getSupportActionBar().setBackgroundDrawable(actionBarBackground);
+        //getSupportActionBar().setStackedBackgroundDrawable(actionBarBackground);
         //getSupportActionBar().hide();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -149,7 +185,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_chapter_reader, menu);
+        //getMenuInflater().inflate(R.menu.menu_chapter_reader, menu);
         return true;
     }
 
@@ -218,6 +254,14 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final int action = MotionEventCompat.getActionMasked(event);
+
+        if(action == MotionEvent.ACTION_DOWN) {
+                if (getSupportActionBar().isShowing()) {
+                    getSupportActionBar().hide();
+                } else {
+                    getSupportActionBar().show();
+                }
+        }
 
         if(mViewPager.getCurrentItem() == prevCh) {
             switch (action) {
@@ -391,6 +435,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             Intent intent = new Intent(ChapterReader.this, ChapterReader.class);
             Bundle bundle = new Bundle();
             bundle.putString("href", item.content);
+            bundle.putString("title", item.id);
             bundle.putStringArray("pageURLs", pageURLs);
             bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here
             bundle.putInt("chno", chno);
@@ -445,7 +490,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             }else{
                 //Log.d("PageFragment getItem", "not yet," + position + " " + mPages);
             }
-            return PageFragment.newInstance(mPageURLs[position], getChapterNumber());
+            return PageFragment.newInstance(mPageURLs[position], getChapterNumber(), (Toolbar) findViewById(R.id.toolbar_reader_bottom));
         }
 
 

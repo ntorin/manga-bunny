@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -75,6 +76,7 @@ public class PageFragment extends Fragment {
     private float mPosY;
     private FragmentActivity mFragmentActivity;
     private File mFile;
+    private static Toolbar mBottomToolbar;
 
 
     public PageFragment() {
@@ -91,12 +93,14 @@ public class PageFragment extends Fragment {
      * @return A new instance of fragment PageFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PageFragment newInstance(String href, int chno) {
+    public static PageFragment newInstance(String href, int chno, Toolbar bottomToolbar) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putString("href", href);
         args.putInt("chno", chno);
         fragment.setArguments(args);
+        //bottomToolbar.menu
+        fragment.mBottomToolbar = bottomToolbar;
         return fragment;
     }
 
@@ -109,6 +113,8 @@ public class PageFragment extends Fragment {
         }
 
         mFragmentActivity = getActivity();
+
+
         setHasOptionsMenu(true);
     }
 
@@ -117,7 +123,11 @@ public class PageFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
+
+        //mBottomToolbar.inflateMenu(R.menu.menu_page);
+        //inflater.inflate(R.menu.menu_page, mBottomToolbar.getMenu());
         inflater.inflate(R.menu.menu_page, menu);
+
     }
 
     @Override
@@ -325,14 +335,16 @@ public class PageFragment extends Fragment {
                     FileOutputStream fos = null;
                     if (getActivity() != null) {
                         fos = getActivity().openFileOutput(mFileName, Context.MODE_PRIVATE);
+
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                        mFile = getActivity().getFileStreamPath(mFileName);
+                        mBitmapURI = mFile.toURI().toString();
+                        Log.d("filepathURI", "" + mBitmapURI);
+                        fos.close();
                     }
 
 
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    mFile = getActivity().getFileStreamPath(mFileName);
-                    mBitmapURI = mFile.toURI().toString();
-                    Log.d("filepathURI", "" + mBitmapURI);
-                    fos.close();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -385,6 +397,8 @@ public class PageFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_page, container, false);
+
+
         mImageView = (ImageView) view.findViewById(R.id.reader_img);
         //if(bitmap != null){
             Log.d("onCreateView resetimg", "setting image" + mBitmapURI);

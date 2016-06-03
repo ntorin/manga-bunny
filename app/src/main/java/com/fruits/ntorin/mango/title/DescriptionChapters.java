@@ -81,6 +81,7 @@ public class DescriptionChapters extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(getIntent().getStringExtra("title"));
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -92,6 +93,35 @@ public class DescriptionChapters extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        Toolbar bottomToolbar = (Toolbar) findViewById(R.id.toolbar_title_menu);
+        bottomToolbar.inflateMenu(R.menu.menu_description_chapters);
+        bottomToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                int id = item.getItemId();
+
+                //noinspection SimplifiableIfStatement
+                switch (id){
+                    case R.id.favorite_title:
+                        AddToFavorites();
+                        return true;
+                    case R.id.unfavorite_title:
+                        RemoveFromFavorites();
+                        return true;
+                    case R.id.read_title:
+                        return true;
+                    case R.id.download_title:
+                        return true;
+                    case R.id.share_title:
+                        CopyURL();
+                        return true;
+                }
+
+                return false;
+            }
+        });
+
         Intent intent = this.getIntent();
         setTitle(intent.getStringExtra("title"));
         new AsyncFetchTitle(intent.getStringExtra("href")).execute();
@@ -102,7 +132,7 @@ public class DescriptionChapters extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_description_chapters, menu);
+        //getMenuInflater().inflate(R.menu.menu_description_chapters, menu);
         return true;
     }
 
@@ -150,13 +180,15 @@ public class DescriptionChapters extends AppCompatActivity
         protected Void doInBackground(Void... params) { //// FIXME: 3/15/2016
             Elements summary;
             chMap = new HashMap<String, Chapter>();
-            Uri cover;
+            Uri cover = null;
             TitlePackage titlePackage = DescriptionChaptersSetup.MangahereTitleSetup(href, chMap);
 
             summary = titlePackage.elements;
             chMap = titlePackage.chapterMap;
             Log.d("check", "" + getIntent().getStringExtra("cover"));
-            cover = Uri.parse(getIntent().getStringExtra("cover"));
+            if(getIntent().getStringExtra("cover") != null) {
+                cover = Uri.parse(getIntent().getStringExtra("cover"));
+            }
             String summaryText = "";
             if (summary != null) {
                 summaryText = summary.first().text();
@@ -193,8 +225,7 @@ public class DescriptionChapters extends AppCompatActivity
                     titleInfo += cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_RANK)) + "\n";
 
 
-
-                    descriptionFragment.setText(progress[0].description,  (TextView) findViewById(R.id.description_title_description));
+                    descriptionFragment.setText(progress[0].description, (TextView) findViewById(R.id.description_title_description));
                     descriptionFragment.setText(titleInfo, (TextView) findViewById(R.id.description_title_info));
                     descriptionFragment.setCover(progress[0].cover);
                     Log.d("s", "set text");
@@ -261,8 +292,11 @@ public class DescriptionChapters extends AppCompatActivity
             Intent intent = new Intent(DescriptionChapters.this, ChapterReader.class);
             Bundle bundle = new Bundle();
             bundle.putString("href", item.content);
+            bundle.putString("title", item.id);
             bundle.putStringArray("pageURLs", pageURLs);
-            bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here
+            if(pages != null) {
+                bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here
+            }
             bundle.putInt("chno", Integer.parseInt(chno));
             bundle.putSerializable("chlist", (HashMap) mMap);
             intent.putExtras(bundle);

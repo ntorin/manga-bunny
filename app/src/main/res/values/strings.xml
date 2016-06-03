@@ -195,4 +195,7 @@
     <string name="settings_dialog_message">Configure Search Settings</string>
     <string name="fillDB">Fill Database</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="reading_direction">Reading direction</string>
+    <string name="action_reading_direction">Reading direction</string>
+    <string name="action_screen_orientation">Screen orientation</string>
 </resources>
