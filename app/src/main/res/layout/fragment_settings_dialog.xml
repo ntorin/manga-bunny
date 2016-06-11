@@ -22,20 +22,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SearchSettings"
-                android:text="Mangafox" />
+                android:text="Mangafox"
+                android:textColor="#ffffff" />
 
             <RadioButton
                 android:id="@+id/pickSourceDefault"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SearchSettings"
-                android:text="MangaHere" />
+                android:text="MangaHere"
+                android:textColor="#ffffff" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SearchSettings"
-                android:text="Batoto" />
+                android:text="Batoto"
+                android:textColor="#ffffff" />
         </RadioGroup>
 
         <RadioGroup
@@ -49,13 +52,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SearchSettings"
-                android:text="title" />
+                android:text="title"
+                android:textColor="#ffffff" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SearchSettings"
-                android:text="rank" />
+                android:text="rank"
+                android:textColor="#ffffff" />
         </RadioGroup>
 
 

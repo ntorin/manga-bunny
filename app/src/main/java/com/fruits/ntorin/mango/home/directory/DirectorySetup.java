@@ -89,7 +89,7 @@ public class DirectorySetup {
                             "(" + title.attr("href") + ") already exists in db; skipping");
                 }
                 c++;
-                if(c > 10){ //// FIXME testing purposes
+                if(c > 25){ //// FIXME testing purposes
                     return;
                 }
             }

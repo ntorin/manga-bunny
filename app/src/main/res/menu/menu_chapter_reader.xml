@@ -11,6 +11,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_all_bookmarks"
+        android:icon="@drawable/ic_action_not_important"
+        android:title="@string/action_all_bookmarks"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_reading_direction"
         android:icon="@drawable/ic_action_new"
         android:title="@string/action_reading_direction"
@@ -46,6 +52,9 @@
 
         <menu>
             <!-- needs RadioGroup -->
+            <item
+                android:id="@+id/action_default_orientation"
+                android:title="@string/action_default_orientation" />
             <item
                 android:id="@+id/action_lock_portrait"
                 android:title="@string/action_lock_portrait" />

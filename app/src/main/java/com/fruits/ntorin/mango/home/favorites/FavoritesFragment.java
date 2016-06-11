@@ -322,7 +322,8 @@ public class FavoritesFragment extends Fragment {
                     for (Element element : chapters) {
                         Element e = element.children().first();
                         Log.d("t", e.attr("href"));
-                        newChapters.add(new Chapter(e.ownText(), e.attr("href")));
+                        String[] text = e.ownText().split(" ");
+                        newChapters.add(new Chapter(e.ownText(), e.attr("href"), text[text.length - 1]));
                         //ch++;
                     }
                     selectQuery.moveToPosition(i);

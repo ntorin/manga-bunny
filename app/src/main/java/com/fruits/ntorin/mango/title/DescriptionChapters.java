@@ -225,11 +225,15 @@ public class DescriptionChapters extends AppCompatActivity
                     titleInfo += cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_RANK)) + "\n";
 
 
-                    descriptionFragment.setText(progress[0].description, (TextView) findViewById(R.id.description_title_description));
-                    descriptionFragment.setText(titleInfo, (TextView) findViewById(R.id.description_title_info));
-                    descriptionFragment.setCover(progress[0].cover);
+                    if (descriptionFragment != null) {
+                        descriptionFragment.setText(progress[0].description, (TextView) findViewById(R.id.description_title_description));
+                        descriptionFragment.setText(titleInfo, (TextView) findViewById(R.id.description_title_info));
+                        descriptionFragment.setCover(progress[0].cover);
+                    }
                     Log.d("s", "set text");
-                    chaptersFragment.setAdapter(progress[0].map);
+                    if (chaptersFragment != null) {
+                        chaptersFragment.setAdapter(progress[0].map);
+                    }
                     mMap = progress[0].map;
 
                 }
@@ -293,6 +297,7 @@ public class DescriptionChapters extends AppCompatActivity
             Bundle bundle = new Bundle();
             bundle.putString("href", item.content);
             bundle.putString("title", item.id);
+            bundle.putString("mangatitle", String.valueOf(getSupportActionBar().getTitle()));
             bundle.putStringArray("pageURLs", pageURLs);
             if(pages != null) {
                 bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here

@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -31,6 +33,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.fruits.ntorin.mango.R;
+import com.fruits.ntorin.mango.database.DirectoryContract;
+import com.fruits.ntorin.mango.database.DirectoryDbHelper;
+import com.fruits.ntorin.mango.title.Chapter;
 import com.soundcloud.android.crop.Crop;
 
 import org.jsoup.Jsoup;
@@ -56,7 +61,7 @@ import static com.fruits.ntorin.mango.BitmapFunctions.getBitmapFromURL;
 public class PageFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "http://mangafox.me/manga/virgin_love/v01/c002/1.html";
+    //private static final String ARG_PARAM1 = "http://mangafox.me/manga/virgin_love/v01/c002/1.html";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
@@ -76,7 +81,8 @@ public class PageFragment extends Fragment {
     private float mPosY;
     private FragmentActivity mFragmentActivity;
     private File mFile;
-    private static Toolbar mBottomToolbar;
+    private ChapterReader chapterReader;
+    //private static Toolbar mBottomToolbar;
 
 
     public PageFragment() {
@@ -93,14 +99,19 @@ public class PageFragment extends Fragment {
      * @return A new instance of fragment PageFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PageFragment newInstance(String href, int chno, Toolbar bottomToolbar) {
+    public static PageFragment newInstance(String href, int chno, int pgno, String title,
+                                           String chapterTitle, String chapterHref, ChapterReader chapterReader) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putString("href", href);
         args.putInt("chno", chno);
+        args.putInt("pgno", pgno);
+        args.putString("title", title);
+        args.putString("chaptertitle", chapterTitle);
+        args.putString("chapterhref", chapterHref);
         fragment.setArguments(args);
-        //bottomToolbar.menu
-        fragment.mBottomToolbar = bottomToolbar;
+        fragment.chapterReader = chapterReader;
+        //fragment.mBottomToolbar = bottomToolbar;
         return fragment;
     }
 
@@ -108,7 +119,7 @@ public class PageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            //mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
@@ -140,6 +151,7 @@ public class PageFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         switch(id){
             case R.id.action_bookmark:
+                BookmarkPage();
                 return true;
             case R.id.action_crop:
                 if(mBitmapURI != null){
@@ -155,6 +167,8 @@ public class PageFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
     //@Override
     public boolean onTouchEvent(MotionEvent ev) {
@@ -340,6 +354,8 @@ public class PageFragment extends Fragment {
                         mFile = getActivity().getFileStreamPath(mFileName);
                         mBitmapURI = mFile.toURI().toString();
                         Log.d("filepathURI", "" + mBitmapURI);
+                        int position = getArguments().getInt("pgno") - 1;
+                        chapterReader.mBitmapURIs[position]  = Uri.parse(mBitmapURI);
                         fos.close();
                     }
 
@@ -389,6 +405,37 @@ public class PageFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void BookmarkPage() {
+        DirectoryDbHelper dbHelper = new DirectoryDbHelper(getContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        Bundle bkmkData = this.getArguments();
+
+        Log.d("BookmarkPage", "" + this.getArguments());
+        Log.d("BookmarkPage", bkmkData.getString("title"));
+        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, bkmkData.getString("title"));
+
+        Log.d("BookmarkPage", bkmkData.getString("chaptertitle"));
+        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_CHAPTERID, bkmkData.getString("chaptertitle"));
+
+        Log.d("BookmarkPage", bkmkData.getString("chapterhref"));
+        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_CHAPTERCONTENT, bkmkData.getString("chapterhref"));
+
+        Log.d("BookmarkPage", "" + bkmkData.getInt("pgno"));
+        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_PAGENUM, bkmkData.getInt("pgno"));
+
+        Log.d("BookmarkPage", "" + bkmkData.getInt("chno"));
+        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_CHAPTERNUM, bkmkData.getInt("chno"));
+
+        //Log.d("BookmarkPage", );
+        values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_PAGEIMG, mBitmapURI);
+        db.insert(DirectoryContract.DirectoryEntry.BOOKMARKS_TABLE_NAME, null, values);
+
+        Toast toast = Toast.makeText(getContext(), "Added page to Bookmarks", Toast.LENGTH_SHORT);
+        toast.show();
+
     }
 
 

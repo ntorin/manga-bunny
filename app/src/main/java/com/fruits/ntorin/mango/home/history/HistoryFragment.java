@@ -191,7 +191,9 @@ public class HistoryFragment extends Fragment {
                 String title = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE));
                 String href = cursor.getString(cursor.getColumnIndex(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF));
                 //test.close();
-                Chapter chapter = new Chapter(title, href);
+
+                String[] text = title.split(" ");
+                Chapter chapter = new Chapter(title, href, text[text.length - 1]);
                 new AsyncGetPagesFromHistory(chapter).execute();
                 bundle.putString("title", title);
                 bundle.putString("href", href);

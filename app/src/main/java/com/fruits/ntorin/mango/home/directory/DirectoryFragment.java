@@ -230,7 +230,7 @@ public class DirectoryFragment extends Fragment {
         AppHome appHome = (AppHome) getActivity();
         appHome.setFragmentCalled(this);
         //dialog.set(DialogFragment.STYLE_NORMAL, R.style.AppTheme);
-        dialog.show(getActivity().getFragmentManager(), "test");
+        dialog.show(getActivity().getFragmentManager(), "SettingsDialog");
     }
 
     public void requeryFromConfigure(String sortBy, String pickSource, ArrayList<String> genres) {
@@ -325,7 +325,7 @@ public class DirectoryFragment extends Fragment {
             if (params[0].equals(DirectoryContract.DirectoryEntry.MANGAFOX_TABLE_NAME)) {
                 DirectorySetup.MangafoxSetup(db);
             } else if (params[0].equals(DirectoryContract.DirectoryEntry.MANGAHERE_TABLE_NAME)) {
-                    DirectorySetup.MangaHereSetup(db, getContext());
+                    //DirectorySetup.MangaHereSetup(db, getContext());
                 } else if (params[0].equals(DirectoryContract.DirectoryEntry.BATOTO_TABLE_NAME)) {
                         DirectorySetup.BatotoSetup(values, db);
                     }
@@ -348,8 +348,11 @@ public class DirectoryFragment extends Fragment {
                     pickSource, null);
 
 
-            directoryAdapter = new DirectoryAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
-            simpleCursorAdapter = new SimpleCursorAdapter(fragment.getContext(), R.layout.site_item, selectQuery, from, to, 0);
+            directoryAdapter = new DirectoryAdapter(fragment.getContext(),
+                    R.layout.site_item, selectQuery, from, to, 0);
+            simpleCursorAdapter = new SimpleCursorAdapter(fragment.getContext(),
+                    R.layout.site_item, selectQuery, from, to, 0);
+
             FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
                 @Override
                 public Cursor runQuery(CharSequence constraint) {

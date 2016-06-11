@@ -23,14 +23,8 @@ android {
 
 dependencies {
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.android.support:recyclerview-v7:23.1.1'
-    compile 'org.jsoup:jsoup:1.8.3'
-    compile 'com.android.support:multidex:1.0.1'
     //compile 'com.github.GoogleCloudPlatform:gcloud-java:v0.2.2'
     //compile 'com.google.apis:google-api-services-datastore:v1beta3-rev3-1.22.0'
-    compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile files('libs/appengine-api-1.0.sdk-1.9.37.jar')
     /*compile files('libs/google-api-client-1.21.0.jar')
     compile files('libs/google-api-client-android-1.21.0.jar')
@@ -47,11 +41,16 @@ dependencies {
 // http://mvnrepository.com/artifact/com.google.appengine/appengine-api-1.0-sdk
     //compile group: 'com.google.appengine', name: 'appengine-api-1.0-sdk', version: '1.9.37'
 
-
     //compile project(path: ':gae', configuration: 'android-endpoints')
     // http://mvnrepository.com/artifact/com.google.appengine/appengine-api-1.0-sdk
     //compile group: 'com.google.appengine', name: 'appengine-api-1.0-sdk', version: '1.9.37'
 
-
     //compile 'com.theartofdev.edmodo:android-image-cropper:2.0.1'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'org.jsoup:jsoup:1.8.3'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.soundcloud.android:android-crop:1.0.1@aar'
+    compile 'com.android.support:support-v4:23.4.0'
 }

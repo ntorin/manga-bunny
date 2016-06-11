@@ -2,48 +2,35 @@ package com.fruits.ntorin.mango.reader;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ContentValues;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fruits.ntorin.mango.R;
-import com.fruits.ntorin.mango.database.DirectoryContract;
-import com.fruits.ntorin.mango.database.DirectoryDbHelper;
 import com.fruits.ntorin.mango.title.Chapter;
-import com.fruits.ntorin.mango.title.DescriptionChapters;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -54,21 +41,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChapterReader extends AppCompatActivity implements PageFragment.OnFragmentInteractionListener{
+public class ChapterReader extends AppCompatActivity implements
+        PageFragment.OnFragmentInteractionListener,
+        BookmarksDialogFragment.BookmarksDialogListener,
+        PageJumpDialogFragment.PageJumpDialogListener {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+    public Uri[] mBitmapURIs;
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
     private View mView;
     private int mPages;
@@ -108,9 +87,10 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
 
         Intent intent = this.getIntent();
 
-        mPages = intent.getIntExtra("pages", 1);
+        mPages = intent.getIntExtra("pages", 20);
         mHref = intent.getStringExtra("href");
         mPageURLs = intent.getStringArrayExtra("pageURLs");
+        mBitmapURIs = new Uri[mPages];
 
         nextCh = mPages - 1;
 
@@ -124,7 +104,10 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
-                switch(id){
+                switch (id) {
+                    case R.id.action_all_bookmarks:
+                        ShowAllBookmarks();
+                        return true;
                     case R.id.action_left_to_right:
                         return true;
                     case R.id.action_right_to_left:
@@ -132,8 +115,19 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
                     case R.id.action_top_to_bottom:
                         return true;
                     case R.id.action_page_jump:
+                        for (int i = 0; i < mBitmapURIs.length; i++) {
+                            Log.d("pagejump", "" + mBitmapURIs[i]);
+                        }
+                        PageJump();
                         return true;
-                    case R.id.action_more_options:
+                    case R.id.action_default_orientation:
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        return true;
+                    case R.id.action_lock_portrait:
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                        return true;
+                    case R.id.action_lock_landscape:
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                         return true;
                     default:
                         return false;
@@ -158,10 +152,10 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            if(Build.VERSION.SDK_INT >= 23){
+            if (Build.VERSION.SDK_INT >= 23) {
                 //window.setStatusBarColor(ContextCompat.getColor(getBaseContext(),android.R.color.transparent));
                 //window.setNavigationBarColor(ContextCompat.getColor(getBaseContext(), android.R.color.transparent));
-            }else {
+            } else {
                 //window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
                 //window.setNavigationBarColor(getResources().getColor(android.R.color.transparent));
             }
@@ -174,12 +168,37 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
-        if(getIntent().getBooleanExtra("backflag", false)){
+        if (getIntent().getBooleanExtra("backflag", false)) {
             mViewPager.setCurrentItem(mPages - 1);
         }
         //mViewPager.setOffscreenPageLimit(mPages);
         Log.d("ChapterReader", "onCreate finished");
 
+    }
+
+    private void PageJump() {
+        DialogFragment dialog = new PageJumpDialogFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("bitmapuris", mBitmapURIs);
+        bundle.putSerializable("chlist", getIntent().getSerializableExtra("chlist"));
+        Log.d("PageJump", "" + getIntent().getSerializableExtra("chlist"));
+
+        dialog.setArguments(bundle);
+        dialog.show(this.getFragmentManager(), "PageJumpDialog");
+    }
+
+    private void ShowAllBookmarks() {
+
+        DialogFragment dialog = new BookmarksDialogFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("mangatitle", getIntent().getStringExtra("mangatitle"));
+        bundle.putInt("chno", getChapterNumber());
+
+        dialog.setArguments(bundle);
+        dialog.show(this.getFragmentManager(), "BookmarksDialog");
+        ;
     }
 
     @Override
@@ -191,24 +210,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        switch(id){
-            case R.id.action_left_to_right:
-                return true;
-            case R.id.action_right_to_left:
-                return true;
-            case R.id.action_top_to_bottom:
-                return true;
-            case R.id.action_page_jump:
-                return true;
-            case R.id.action_more_options:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -216,54 +218,30 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
 
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+    @Override
+    public void onItemClick(BookmarksDialogFragment dialog, int chno, int pgno) {
+        if (chno == getChapterNumber()) {
+            mViewPager.setCurrentItem(pgno);
+        } else {
 
-        public PlaceholderFragment() {
         }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_chapter_reader, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
+        Log.d("BookmarksDialogFragment", "item clicked " + chno + " " + pgno);
+        dialog.dismiss();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final int action = MotionEventCompat.getActionMasked(event);
 
-        if(action == MotionEvent.ACTION_DOWN) {
-                if (getSupportActionBar().isShowing()) {
-                    getSupportActionBar().hide();
-                } else {
-                    getSupportActionBar().show();
-                }
+        if (action == MotionEvent.ACTION_DOWN) {
+            if (getSupportActionBar().isShowing()) {
+                getSupportActionBar().hide();
+            } else {
+                getSupportActionBar().show();
+            }
         }
 
-        if(mViewPager.getCurrentItem() == prevCh) {
+        if (mViewPager.getCurrentItem() == prevCh) {
             switch (action) {
                 case MotionEvent.ACTION_DOWN: {
                     Log.d("ChapterReaderMotion", "ACTION_DOWN");
@@ -296,12 +274,12 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
                         String key = String.valueOf(++intkey);
                         Chapter next = map.get(key);
                         Log.d("ChapterReaderMotion", "" + next + " " + key);
-                        if(next == null){
+                        if (next == null) {
                             Toast toast = Toast.makeText(getBaseContext(), "This is the first chapter", Toast.LENGTH_SHORT);
                             toast.show();
-                        }else {
+                        } else {
                             backFlag = true;
-                            new AsyncGetPages(next, intkey).execute();
+                            new AsyncChangeChapters(next, intkey).execute();
                         }
                     }
                     getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.readerBackground));
@@ -318,7 +296,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             }
         }
 
-        if(mViewPager.getCurrentItem() == nextCh) {
+        if (mViewPager.getCurrentItem() == nextCh) {
             switch (action) {
                 case MotionEvent.ACTION_DOWN: {
                     Log.d("ChapterReaderMotion", "ACTION_DOWN");
@@ -351,11 +329,11 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
                         String key = String.valueOf(--intkey);
                         Chapter next = map.get(key);
                         Log.d("ChapterReaderMotion", "" + next + " " + key);
-                        if(next == null){
+                        if (next == null) {
                             Toast toast = Toast.makeText(getBaseContext(), "This is the last chapter", Toast.LENGTH_SHORT);
                             toast.show();
-                        }else {
-                            new AsyncGetPages(next, intkey).execute();
+                        } else {
+                            new AsyncChangeChapters(next, intkey).execute();
                         }
                     }
                     getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.readerBackground));
@@ -377,7 +355,7 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         return super.onTouchEvent(event);
     }
 
-    public int getChapterNumber(){
+    public int getChapterNumber() {
         int intkey = getIntent().getIntExtra("chno", 1);
         HashMap map = (HashMap) getIntent().getSerializableExtra("chlist");
         int totalChapters = map.keySet().size();
@@ -385,12 +363,36 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
         return totalChapters - intkey + 1;
     }
 
-    public class AsyncGetPages extends AsyncTask<Void, Void, Void> {
+    @Override
+    public void onPageItemClick(PageJumpDialogFragment dialog, int pgno) {
+        Log.d("PageJumpDialogFragment", "page clicked");
+        mViewPager.setCurrentItem(pgno);
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onChapterItemClick(PageJumpDialogFragment dialog, int chno) {
+        Log.d("PageJumpDialogFragment", "chapter clicked, chno " + chno + "current ch "
+                + getChapterNumber() + " chno string " + Integer.toString(chno));
+
+        if(chno != getChapterNumber()){
+            HashMap<String, Chapter> chlist = (HashMap) getIntent().getSerializableExtra("chlist");
+            int totalChapters = chlist.keySet().size();
+            Chapter chapter = chlist.get(Integer.toString(totalChapters - chno + 1));
+
+            Log.d("PageJumpDialogFragment", "" + (totalChapters - chno + 1));
+
+            new AsyncChangeChapters(chapter, chno).execute();
+        }
+        dialog.dismiss();
+    }
+
+    public class AsyncChangeChapters extends AsyncTask<Void, Void, Void> {
 
         Chapter item;
         int chno;
 
-        public AsyncGetPages(Chapter item, int chno){
+        public AsyncChangeChapters(Chapter item, int chno) {
             super();
             this.item = item;
             this.chno = chno;
@@ -405,11 +407,10 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
                 Elements li = document.getElementsByAttributeValue("onchange", "change_page(this)");
                 pages = li.first().children();
                 Log.d("#pages", "" + (pages.size()));
-                //li = document.getElementsByAttributeValue("class", "btn next_page");
                 Log.d("nextpageurl", "" + li.first().attr("href"));
                 pageURLs = new String[pages.size()];
                 int i = 0;
-                for(Element option : pages){
+                for (Element option : pages) {
                     pageURLs[i] = option.attr("value");
                     Log.d("getpages", option.attr("value"));
                     i++;
@@ -420,18 +421,6 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
                 e.printStackTrace();
             }
 
-
-            /*ContentValues values = new ContentValues();
-            DirectoryDbHelper dbHelper = new DirectoryDbHelper(getBaseContext());
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_TITLE, item.id);
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF, item.content);
-            values.put(DirectoryContract.DirectoryEntry.COLUMN_NAME_DATE, getDateTime());
-            db.delete(DirectoryContract.DirectoryEntry.HISTORY_TABLE_NAME,
-                    DirectoryContract.DirectoryEntry.COLUMN_NAME_HREF + "=\'" + item.content + "\'", null);
-            db.insert(DirectoryContract.DirectoryEntry.HISTORY_TABLE_NAME, null, values);
-            Log.d("DescriptionChapters", "history time " + getDateTime());*/
-
             Intent intent = new Intent(ChapterReader.this, ChapterReader.class);
             Bundle bundle = new Bundle();
             bundle.putString("href", item.content);
@@ -440,7 +429,8 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
             bundle.putInt("pages", pages.size()); //// FIXME: 4/2/2016 possible null issues here
             bundle.putInt("chno", chno);
             bundle.putBoolean("backflag", backFlag);
-            bundle.putSerializable("chlist", (HashMap) getIntent().getSerializableExtra("chlist"));
+            bundle.putString("mangatitle", getIntent().getStringExtra("mangatitle"));
+            bundle.putSerializable("chlist", getIntent().getSerializableExtra("chlist"));
             intent.putExtras(bundle);
 
             Log.d("toChapterReader", item.content);
@@ -450,23 +440,6 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
 
             return null;
         }
-
-        /*@Override
-        protected void onPostExecute(Void aVoid) {
-            runOnUiThread(new Runnable(){
-                @Override
-                public void run(){
-                    Intent intent = new Intent(DescriptionChapters.this, ChapterReader.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("href", href);
-                    intent.putExtras(bundle);
-
-                    Log.d("toChapterReader", href);
-                    startActivity(intent);
-
-                }
-            });
-        }*/
     }
 
 
@@ -482,21 +455,15 @@ public class ChapterReader extends AppCompatActivity implements PageFragment.OnF
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            //Log.d("ChapterReader", "pager position " + position);
-            if(position + 1 >= mPages){
-                //mViewPager.setOffscreenPageLimit(1);
-            }else{
-                //Log.d("PageFragment getItem", "not yet," + position + " " + mPages);
-            }
-            return PageFragment.newInstance(mPageURLs[position], getChapterNumber(), (Toolbar) findViewById(R.id.toolbar_reader_bottom));
+            return PageFragment.newInstance(mPageURLs[position], getChapterNumber(), position + 1,
+                    getIntent().getStringExtra("mangatitle"), getIntent().getStringExtra("title"),
+                    getIntent().getStringExtra("href"), ChapterReader.this);
         }
 
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show mPages total pages.
             return mPages;
         }
 

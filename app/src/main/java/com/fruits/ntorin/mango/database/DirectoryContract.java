@@ -8,6 +8,8 @@ import android.provider.BaseColumns;
 public final class DirectoryContract {
 
 
+
+
     public DirectoryContract(){}
 
     public static abstract class DirectoryEntry implements BaseColumns {
@@ -17,6 +19,7 @@ public final class DirectoryContract {
         public static final String FAVORITES_TABLE_NAME = "Favorites";
         public static final String HISTORY_TABLE_NAME = "History";
         public static final String UPDATE_TABLE_NAME = "Updates";
+        public static final String BOOKMARKS_TABLE_NAME = "Bookmarks";
 
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_HREF = "href";
@@ -28,6 +31,12 @@ public final class DirectoryContract {
         public static final String COLUMN_NAME_RANK = "rank";
         public static final String COLUMN_NAME_CHAPTERS = "chapters";
         public static final String COLUMN_NAME_DATE = "date";
+        public static final String COLUMN_NAME_CHAPTER = "chapter";
+        public static final String COLUMN_NAME_PAGENUM = "pageNumber";
+        public static final String COLUMN_NAME_CHAPTERNUM = "chapterNumber";
+        public static final String COLUMN_NAME_PAGEIMG = "pageImage";
+        public static final String COLUMN_NAME_CHAPTERID = "chapterTitle";
+        public static final String COLUMN_NAME_CHAPTERCONTENT = "chapterHref";
     }
 
     public static final String SQL_CREATE_MANGAFOX_TABLE =
@@ -98,6 +107,16 @@ public final class DirectoryContract {
                     DirectoryEntry.COLUMN_NAME_RANK + " TEXT," +
                     DirectoryEntry.COLUMN_NAME_DATE + " TEXT" + " )";
 
+    public static final String SQL_CREATE_BOOKMARKS_TABLE =
+            "CREATE TABLE " + DirectoryEntry.BOOKMARKS_TABLE_NAME + " (" +
+                    DirectoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    DirectoryEntry.COLUMN_NAME_TITLE + " TEXT," +
+                    DirectoryEntry.COLUMN_NAME_CHAPTERID + " TEXT," +
+                    DirectoryEntry.COLUMN_NAME_CHAPTERCONTENT + " TEXT," +
+                    DirectoryEntry.COLUMN_NAME_PAGENUM + " INTEGER," +
+                    DirectoryEntry.COLUMN_NAME_CHAPTERNUM + " INTEGER," +
+                    DirectoryEntry.COLUMN_NAME_PAGEIMG + " BLOB" + " )";
+
 
 
 
@@ -118,5 +137,8 @@ public final class DirectoryContract {
 
     public static final String SQL_DELETE_FAVORITES_TABLE =
             "DROP TABLE IF EXISTS " + DirectoryEntry.FAVORITES_TABLE_NAME;
+
+    public static final String SQL_DELETE_BOOKMARKS_TABLE =
+            "DROP TABLE IF EXISTS " + DirectoryEntry.BOOKMARKS_TABLE_NAME;
 
 }

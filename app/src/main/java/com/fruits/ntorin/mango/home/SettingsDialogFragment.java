@@ -42,7 +42,6 @@ public class SettingsDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //setStyle(R.style.AppTheme, R.style.AppTheme);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View v = inflater.inflate(R.layout.fragment_settings_dialog, null);
@@ -61,9 +60,7 @@ public class SettingsDialogFragment extends DialogFragment {
         genreList = getResources().getStringArray(genreListID[0]);
         Log.d("genreList", "" + genreList[0] + " " + genreList[1]);
 
-        //Log.d("SettingsDialogFragment", "" + getView());
         builder.setView(v);
-        //RadioButton r1 = (RadioButton) v.findViewById(R.id.radioTest);
         sortByGroup.setOnCheckedChangeListener(
                 new RadioGroup.OnCheckedChangeListener() {
                     @Override
@@ -91,24 +88,6 @@ public class SettingsDialogFragment extends DialogFragment {
         );
 
         initiateGenreList(linearLayout);
-
-        /*String[] sortBy = {"a", "b", "c"};
-        String[] filterGenre = {"x", "y", "z"};
-        builder.setTitle(R.string.settings_dialog_message);
-        builder.setSingleChoiceItems(sortBy, 0,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mListener.onItemClick(SettingsDialogFragment.this);
-                    }
-                });
-        builder.setMultiChoiceItems(filterGenre, null,
-                new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        mListener.onItemClick(SettingsDialogFragment.this);
-                    }
-                });*/
         return builder.create();
     }
 

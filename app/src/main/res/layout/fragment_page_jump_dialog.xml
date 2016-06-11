@@ -1,0 +1,30 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".reader.PageJumpDialogFragment">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <GridView
+            android:id="@+id/pages_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="394dp"
+            android:numColumns="auto_fit"/>
+
+        <GridView
+            android:id="@+id/chapters_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:numColumns="4"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

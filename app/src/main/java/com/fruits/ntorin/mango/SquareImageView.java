@@ -5,6 +5,7 @@ package com.fruits.ntorin.mango;
  */
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 public class SquareImageView extends ImageView
@@ -29,5 +30,6 @@ public class SquareImageView extends ImageView
     {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth()); //Snap to width
+        //Log.d("SquareImageView", "width: " + getMeasuredWidth() + ", height: " + getMeasuredHeight());
     }
 }

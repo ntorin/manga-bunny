@@ -186,8 +186,8 @@
     <string name="action_page_jump">Page jump</string>
     <string name="action_bookmark">Bookmark this page</string>
     <string name="action_more_options">More options</string>
-    <string name="action_lock_portrait">Vertical orientation</string>
-    <string name="action_lock_landscape">Horizontal orientation</string>
+    <string name="action_lock_portrait">Lock to Vertical</string>
+    <string name="action_lock_landscape">Lock to Horizontal</string>
     <string name="action_download_title">Download title</string>
     <string name="action_read_title">Read this title</string>
     <string name="action_favorite_title">Add to favorites</string>
@@ -197,5 +197,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="reading_direction">Reading direction</string>
     <string name="action_reading_direction">Reading direction</string>
-    <string name="action_screen_orientation">Screen orientation</string>
+    <string name="action_screen_orientation">Display</string>
+    <string name="action_all_bookmarks">All bookmarks</string>
+    <string name="action_default_orientation">Unlock</string>
 </resources>

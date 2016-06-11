@@ -9,9 +9,11 @@ public class Chapter implements Serializable{
 
     public final String id;
     public final String content;
+    public final String chno;
 
-    public Chapter(String id, String content) {
+    public Chapter(String id, String content, String chno) {
         this.id = id;
         this.content = content;
+        this.chno = chno;
     }
 }

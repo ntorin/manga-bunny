@@ -29,7 +29,7 @@ public class DescriptionChaptersSetup {
             chMap = new HashMap<String, Chapter>();
             for (Element element : chapters) {
                 Log.d("DescriptionChaptersSet", element.attr("href"));
-                chMap.put(String.valueOf(ch), new Chapter(element.text(), element.attr("href")));
+                //chMap.put(String.valueOf(ch), new Chapter(element.text(), element.attr("href"))); // FIXME: 6/11/2016 Chapter constructor changed
                 ch++;
             }
             Log.d("DescriptionChaptersSet", "setting text");
@@ -54,8 +54,11 @@ public class DescriptionChaptersSetup {
             chMap = new HashMap<String, Chapter>();
             for (Element element : chapters) {
                 Element e = element.children().first();
-                Log.d("t", e.attr("href"));
-                chMap.put(String.valueOf(ch), new Chapter(e.ownText(), e.attr("href")));
+                Log.d("t", e.attr("href") + " owntext: " + e.ownText());
+                String[] text = e.ownText().split(" ");
+                chMap.put(String.valueOf(ch), new Chapter(e.ownText(), e.attr("href"), text[text.length - 1]));
+                //chMap.put(text[text.length - 1], new Chapter(e.ownText(), e.attr("href")));
+                Log.d("t", text[text.length - 1]);
                 ch++;
             }
             String coverURL = document.getElementsByClass("manga_detail_top").first().getElementsByClass("img").first().attr("src");

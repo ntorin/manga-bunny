@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DirectoryDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 15;
+    private static final int DATABASE_VERSION = 17;
     private static final String DATABASE_NAME = "MangoDirectory.db";
 
 
@@ -25,12 +25,14 @@ public class DirectoryDbHelper extends SQLiteOpenHelper {
         db.execSQL(DirectoryContract.SQL_DELETE_MANGAHERE_TABLE);
         db.execSQL(DirectoryContract.SQL_DELETE_BATOTO_TABLE);
         //db.execSQL(DirectoryContract.SQL_DELETE_HISTORY_TABLE);
+        db.execSQL(DirectoryContract.SQL_DELETE_BOOKMARKS_TABLE);
 
         db.execSQL(DirectoryContract.SQL_CREATE_MANGAFOX_TABLE);
         db.execSQL(DirectoryContract.SQL_CREATE_MANGAHERE_TABLE);
         db.execSQL(DirectoryContract.SQL_CREATE_BATOTO_TABLE);
         db.execSQL(DirectoryContract.SQL_CREATE_FAVORITES_TABLE);
         db.execSQL(DirectoryContract.SQL_CREATE_HISTORY_TABLE);
+        db.execSQL(DirectoryContract.SQL_CREATE_BOOKMARKS_TABLE);
 
     }
 
@@ -40,5 +42,8 @@ public class DirectoryDbHelper extends SQLiteOpenHelper {
         db.execSQL(DirectoryContract.SQL_DELETE_MANGAHERE_TABLE);
         db.execSQL(DirectoryContract.SQL_DELETE_BATOTO_TABLE);
         db.execSQL(DirectoryContract.SQL_DELETE_HISTORY_TABLE);*/
+
+        db.execSQL(DirectoryContract.SQL_DELETE_BOOKMARKS_TABLE);
+        db.execSQL(DirectoryContract.SQL_CREATE_BOOKMARKS_TABLE);
     }
 }

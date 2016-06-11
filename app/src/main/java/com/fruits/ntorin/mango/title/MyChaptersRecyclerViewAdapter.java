@@ -36,6 +36,10 @@ public class MyChaptersRecyclerViewAdapter extends RecyclerView.Adapter<MyChapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        String[] values = (String[]) mValues.keySet().toArray(new String[mValues.keySet().size()]);
+        //values.
+        //holder.mItem = mValues.get(values[position]);
+        //holder.mIdView.setText(mValues.get(values[position]).id);
         holder.mItem = mValues.get(String.valueOf(position + 1));
         holder.mIdView.setText(mValues.get(String.valueOf(position + 1)).id);
         //holder.mContentView.setText(mValues.get(String.valueOf(position + 1)).content);
