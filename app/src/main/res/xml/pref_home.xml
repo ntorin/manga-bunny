@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/pref_home_listings"
+        android:entryValues="@array/pref_home_listings_values"
+        android:key="pref_directory_listings"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_directory_listings" />
+
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/pref_home_listings"
+        android:entryValues="@array/pref_home_listings_values"
+        android:key="pref_favorites_listings"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_favorites_listings" />
+
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/pref_home_listings"
+        android:entryValues="@array/pref_home_listings_values"
+        android:key="pref_history_listings"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_history_listings" />
+
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/pref_home_listings"
+        android:entryValues="@array/pref_home_listings_values"
+        android:key="pref_downloads_listings"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_downloads_listings" />
+</PreferenceScreen>

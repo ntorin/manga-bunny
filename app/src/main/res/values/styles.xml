@@ -11,7 +11,20 @@
         <item name="android:textColorPrimary">@color/primary_text_material_light</item>
         <item name="android:textColorSecondary">@color/secondary_text_material_light</item>
         <item name="android:textColorSecondaryInverse">@color/secondary_text_material_dark</item>
-        <item name="android:alertDialogTheme">@style/AlertDialog.AppCompat</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
+    </style>
+
+    <style name="Theme.Transparent" parent="android:Theme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/appiconbmp</item>
     </style>
 
 
@@ -25,7 +38,7 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <!-- Reader theme. -->
-    <style name="ReaderTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="ReaderTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/readerColorPrimary</item>
         <item name="colorPrimaryDark">@color/readerColorPrimaryDark</item>
         <item name="colorAccent">@color/readerColorAccent</item>
@@ -34,6 +47,22 @@
         <item name="android:textColorPrimary">@color/primary_text_material_light</item>
         <item name="android:textColorSecondary">@color/secondary_text_material_light</item>
         <item name="android:textColorSecondaryInverse">@color/secondary_text_material_dark</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu</item>
+        <item name="android:panelBackground">@color/readerColorPrimary</item>
+        <item name="android:panelColorBackground">@color/readerColorPrimary</item>
+        <item name="android:panelFullBackground">@color/readerColorPrimary</item>
+        <item name="android:panelColorForeground">@color/readerColorPrimary</item>
+        <item name="android:actionDropDownStyle">@style/DropDownStyle</item>
+    </style>
+
+    <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">#000000</item>
+    </style>
+
+    <style name="DropDownStyle">
+        <item name="android:background">#000000</item>
+        <item name="android:popupBackground">@color/readerColorPrimary</item>
     </style>
 
     <style name="ReaderTheme.NoActionBar">
@@ -79,6 +108,35 @@
         <item name="android:fullDark">#000000</item>
         <item name="android:topBright">#000000</item>
         <item name="android:topDark">#000000</item>
+    </style>
+
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Dialog">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="colorAccent">#FFFFFF</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:background">#002F40</item>
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+    </style>
+
+    <!-- You can also inherit from NNF_BaseTheme.Light -->
+    <style name="FilePickerTheme" parent="NNF_BaseTheme">
+        <!-- Set these to match your theme -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- Need to set this also to style create folder dialog -->
+        <item name="alertDialogTheme">@style/FilePickerAlertDialogTheme</item>
+        <item name="android:colorBackground">@color/background_material_light</item>
+
+        <!-- If you want to set a specific toolbar theme, do it here -->
+        <!-- <item name="nnf_toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item> -->
+    </style>
+
+    <style name="FilePickerAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
 </resources>

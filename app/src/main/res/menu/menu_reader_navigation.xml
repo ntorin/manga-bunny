@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_prev_chapter"
+        android:icon="@drawable/ic_skip_previous_white_24dp"
+        android:title="@string/action_page_jump"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_next_chapter"
+        android:icon="@drawable/ic_skip_next_white_24dp"
+        android:title="@string/action_page_jump"
+        app:showAsAction="ifRoom" />
+</menu>

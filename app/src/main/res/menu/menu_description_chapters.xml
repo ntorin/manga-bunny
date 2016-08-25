@@ -2,39 +2,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".title.DescriptionChapters">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
 
     <item
         android:id="@+id/favorite_title"
-        android:icon="@drawable/ic_action_favorite"
+        android:icon="@drawable/ic_favorite_border_white_24dp"
         android:title="@string/action_favorite_title"
         app:showAsAction="always" />
 
-    <item
+    <!--<item
         android:id="@+id/unfavorite_title"
-        android:icon="@drawable/ic_action_not_important"
+        android:icon="@drawable/ic_favorite_border_white_24dp"
         android:title="@string/action_unfavorite_title"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/read_title"
-        android:icon="@drawable/ic_action_forward"
-        android:title="@string/action_read_title"
-        app:showAsAction="always" />
+        app:showAsAction="always" /> -->
 
     <item
         android:id="@+id/download_title"
-        android:icon="@drawable/ic_action_download"
+        android:icon="@drawable/ic_file_download_white_24dp"
         android:title="@string/action_download_title"
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/read_title"
+        android:icon="@drawable/ic_play_circle_filled_white_24dp"
+        android:title="@string/action_read_title"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/share_title"
-        android:icon="@drawable/ic_action_share"
+        android:icon="@drawable/ic_link_white_24dp"
         android:title="@string/action_share_page"
         app:showAsAction="always" />
 </menu>

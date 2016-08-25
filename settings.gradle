@@ -1,1 +1,1 @@
-include ':app', ':gae'
+include ':app', ':dstore'

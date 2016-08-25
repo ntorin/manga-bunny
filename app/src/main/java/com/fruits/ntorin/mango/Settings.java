@@ -4,6 +4,7 @@ package com.fruits.ntorin.mango;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -14,12 +15,14 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+
+import com.fruits.ntorin.mango.sourcefns.Sources;
 
 import java.util.List;
 
@@ -34,7 +37,7 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class Settings extends AppCompatPreferenceActivity {
+public class Settings extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
     /**
      * Determines whether to always show the simplified settings UI, where
      * settings are presented in a single list. When false, settings are shown
@@ -42,6 +45,23 @@ public class Settings extends AppCompatPreferenceActivity {
      * shown on tablets.
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
+    public final static String PREF_CHECK_UPDATES = "pref_check_updates";
+    public final static String PREF_TRACK_HISTORY = "pref_track_history";
+    public final static String PREF_AUTOLOAD_DIRECTORY = "pref_autoload_directory";
+    public final static String PREF_VOLUME_NAVIGATION = "pref_volume_navigation";
+    public final static String PREF_AUTODOWNLOAD_WIFI_ONLY = "pref_autodownload_wifi_only";
+    public static final String PREF_DEFAULT_SOURCE = "pref_default_source";
+    public static final String PREF_STARTUP_TAB = "pref_startup_tab";
+    public static final String PREF_READER_ORIENTATION = "pref_reader_orientation";
+    public static final String PREF_READER_DIRECTION = "pref_reader_direction";
+    public static final String PREF_DIRECTORY_LISTINGS = "pref_directory_listings";
+    public static final String PREF_FAVORITES_LISTINGS = "pref_favorites_listings";
+    public static final String PREF_HISTORY_LISTINGS = "pref_history_listings";
+    public static final String PREF_DOWNLOADS_LISTINGS = "pref_downloads_listings";
+    public static final String PREF_AUTO_CHECK_UPDATES = "pref_auto_check_updates";
+    public static final String PREF_SCREEN_TIMEOUT = "pref_screen_timeout";
+    public static final String PREF_TITLE_UPDATE_FREQUENCY = "pref_title_update_frequency";
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -150,7 +170,8 @@ public class Settings extends AppCompatPreferenceActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setTitle("Settings");
         }
     }
 
@@ -177,25 +198,40 @@ public class Settings extends AppCompatPreferenceActivity {
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
 
+        //PreferenceCategory homeHeader = new PreferenceCategory(this);
+        //homeHeader.setTitle(R.string.pref_header_home);
+        //getPreferenceScreen().addPreference(homeHeader);
+        //addPreferencesFromResource(R.xml.pref_home);
+
+        //bindPreferenceSummaryToValue(findPreference(PREF_DIRECTORY_LISTINGS));
+        //bindPreferenceSummaryToValue(findPreference(PREF_FAVORITES_LISTINGS));
+        //bindPreferenceSummaryToValue(findPreference(PREF_HISTORY_LISTINGS));
+        //bindPreferenceSummaryToValue(findPreference(PREF_DOWNLOADS_LISTINGS));
+
         // Add 'notifications' preferences, and a corresponding header.
         PreferenceCategory fakeHeader = new PreferenceCategory(this);
-        fakeHeader.setTitle(R.string.pref_header_notifications);
+        fakeHeader.setTitle(R.string.pref_header_reader);
         getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_notification);
+        addPreferencesFromResource(R.xml.pref_reader);
 
         // Add 'data and sync' preferences, and a corresponding header.
-        fakeHeader = new PreferenceCategory(this);
-        fakeHeader.setTitle(R.string.pref_header_data_sync);
-        getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_data_sync);
+        //fakeHeader = new PreferenceCategory(this);
+        //fakeHeader.setTitle(R.string.pref_header_data_sync);
+        //getPreferenceScreen().addPreference(fakeHeader);
+        //addPreferencesFromResource(R.xml.pref_data_sync);
 
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
-        bindPreferenceSummaryToValue(findPreference("example_text"));
-        bindPreferenceSummaryToValue(findPreference("example_list"));
-        bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
-        bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+        bindPreferenceSummaryToValue(findPreference(PREF_READER_DIRECTION));
+        bindPreferenceSummaryToValue(findPreference(PREF_DEFAULT_SOURCE));
+        bindPreferenceSummaryToValue(findPreference(PREF_STARTUP_TAB));
+        bindPreferenceSummaryToValue(findPreference(PREF_READER_ORIENTATION));
+        bindPreferenceSummaryToValue(findPreference(PREF_TITLE_UPDATE_FREQUENCY));
+
+
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -226,6 +262,17 @@ public class Settings extends AppCompatPreferenceActivity {
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        //Log.d("onSharedPrefChange", "starting");
+        if(key.equals(PREF_DEFAULT_SOURCE)){
+            ListPreference defaultSourcePref = (ListPreference) findPreference(key);
+            int newSource = Integer.parseInt(defaultSourcePref.getValue());
+            Sources.setSelectedSource(newSource);
+            //Log.d("onSharedPrefChange", "new pref: " + newSource);
+        }
     }
 
     /**
@@ -268,14 +315,12 @@ public class Settings extends AppCompatPreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
             setHasOptionsMenu(true);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         }
 
         @Override
@@ -289,6 +334,12 @@ public class Settings extends AppCompatPreferenceActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     /**
      * This fragment shows data and sync preferences only. It is used when the
      * activity is showing a two-pane settings UI.
@@ -298,14 +349,12 @@ public class Settings extends AppCompatPreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
         }
 
         @Override

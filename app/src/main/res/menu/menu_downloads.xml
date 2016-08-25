@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.fruits.ntorin.mango.Home">
+
+    <item
+        android:id="@+id/action_upload"
+        android:title="@string/action_upload"
+        android:orderInCategory="96"
+        android:icon="@drawable/ic_file_upload_white_24dp"
+        app:showAsAction="always" />
+</menu>

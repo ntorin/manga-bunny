@@ -2,12 +2,61 @@
 
     <SwitchPreference
         android:defaultValue="true"
-        android:key="example_switch"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
+        android:key="pref_check_updates"
+        android:title="@string/pref_check_updates" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="pref_auto_check_updates"
+        android:title="@string/pref_auto_check_updates" />
+
+    <ListPreference
+        android:defaultValue="30"
+        android:entries="@array/pref_title_update_frequency"
+        android:entryValues="@array/pref_title_update_frequency_values"
+        android:key="pref_title_update_frequency"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_update_frequency" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="pref_track_history"
+        android:title="@string/pref_track_history" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_autoload_directory"
+        android:lines="3"
+        android:summary="@string/summary_autoload_directory"
+        android:title="@string/pref_autoload_directory" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="pref_autodownload_wifi_only"
+        android:title="@string/pref_autodownload_wifi_only" />
+
+    <ListPreference
+        android:defaultValue="4"
+        android:entries="@array/pref_default_source"
+        android:entryValues="@array/pref_default_source_values"
+        android:key="pref_default_source"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_default_source" />
+
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/pref_startup_tab"
+        android:entryValues="@array/pref_startup_tab_values"
+        android:key="pref_startup_tab"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_startup_tab" />
+
 
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code.
     <EditTextPreference
         android:capitalize="words"
         android:defaultValue="@string/pref_default_display_name"
@@ -16,11 +65,11 @@
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/pref_title_display_name" />
+        android:title="@string/pref_title_display_name" /> -->
 
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code.
     <ListPreference
         android:defaultValue="-1"
         android:entries="@array/pref_example_list_titles"
@@ -28,6 +77,6 @@
         android:key="example_list"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="@string/pref_title_add_friends_to_messages" />
+        android:title="@string/pref_title_add_friends_to_messages" /> -->
 
 </PreferenceScreen>

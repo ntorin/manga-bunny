@@ -5,17 +5,13 @@
 
 
     <!--app:showAsAction="ifRoom|collapseActionView" -->
-    <item
-        android:id="@+id/action_search"
-        android:title="@string/action_search"
-        android:icon="@drawable/ic_action_search"
-        app:showAsAction="always|collapseActionView"
-        app:actionViewClass="android.widget.EditText" />
+
 
     <item
         android:id="@+id/action_search_settings"
-        android:icon="@drawable/ic_action_settings"
-        android:title="@string/action_menu"
+        android:icon="@drawable/ic_settings_applications_white_24dp"
+        android:orderInCategory="96"
+        android:title="@string/action_search_settings"
         app:showAsAction="always">
         <!--<menu>
             <item
@@ -26,27 +22,12 @@
                 android:title="Sort by rating" />
         </menu> -->
 
-        </item>
-
-    <item
-        android:id="@+id/catalog_view"
-        android:title="@string/catalog_view"
-        android:icon="@drawable/ic_action_view_as_grid"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/list_view"
-        android:title="@string/list_view"
-        android:icon="@drawable/ic_action_view_as_list"
-        app:showAsAction="always" />
+    </item>
 
 
-    <item
+    <!-- <item
         android:id="@+id/fillDB"
-        android:title="@string/fillDB"/>
+        android:title="@string/fillDB"/> -->
 
-    <item
-        android:id="@+id/help"
-        android:title="@string/help"/>
 
 </menu>

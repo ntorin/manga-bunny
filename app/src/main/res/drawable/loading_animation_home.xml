@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/loading_home"
+    android:oneshot="false">
+    <item
+        android:drawable="@drawable/loadinghome_1"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_2"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_3"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_4"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_5"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_6"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_7"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_8"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_9"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_10"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_11"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/loadinghome_12"
+        android:duration="50" />
+</animation-list>

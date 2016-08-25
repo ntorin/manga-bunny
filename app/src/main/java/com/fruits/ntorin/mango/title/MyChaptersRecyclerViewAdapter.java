@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fruits.ntorin.mango.R;
-import com.fruits.ntorin.mango.title.ChaptersFragment.OnListFragmentInteractionListener;
 import com.fruits.ntorin.mango.dummy.DummyContent.DummyItem;
+import com.fruits.ntorin.mango.title.ChaptersFragment.OnListFragmentInteractionListener;
 
 import java.util.Map;
 

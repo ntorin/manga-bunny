@@ -7,7 +7,7 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="ReaderTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="ReaderTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@android:color/transparent</item>
         <item name="colorPrimaryDark">@color/readerColorPrimaryDark</item>
         <item name="colorAccent">@color/readerColorAccent</item>

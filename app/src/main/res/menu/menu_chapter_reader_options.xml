@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_reader_options"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:orderInCategory="100"
+        android:title="@string/action_reader_options"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/action_reading_direction"
+                android:title="@string/action_reading_direction"
+                app:showAsAction="ifRoom">
+
+                <menu>
+                    <item
+                        android:id="@+id/action_left_to_right"
+                        android:icon="@drawable/ic_action_forward"
+                        android:title="@string/action_left_to_right"
+                        app:showAsAction="ifRoom" />
+
+                    <item
+                        android:id="@+id/action_right_to_left"
+                        android:icon="@drawable/ic_action_back"
+                        android:title="@string/action_right_to_left"
+                        app:showAsAction="ifRoom" />
+
+                    <!-- <item
+                        android:id="@+id/action_top_to_bottom"
+                        android:icon="@drawable/ic_action_expand"
+                        android:title="@string/action_top_to_bottom"
+                        app:showAsAction="ifRoom" /> -->
+                </menu>
+
+            </item>
+
+            <item
+                android:id="@+id/action_volume_navigation"
+                android:title="@string/action_volume_navigation"
+                app:showAsAction="ifRoom">
+                <menu>
+                    <item
+                        android:id="@+id/action_volnav_on"
+                        android:title="@string/action_volnav_on" />
+                    <item
+                        android:id="@+id/action_volnav_off"
+                        android:title="@string/action_volnav_off" />
+                </menu>
+            </item>
+
+            <item
+                android:id="@+id/action_screen_timeout"
+                android:title="@string/action_screen_timeout"
+                app:showAsAction="ifRoom">
+                <menu>
+                    <item
+                        android:id="@+id/action_timeout_on"
+                        android:title="@string/action_volnav_on" />
+                    <item
+                        android:id="@+id/action_timeout_off"
+                        android:title="@string/action_volnav_off" />
+                </menu>
+            </item>
+
+            <!--<item
+                android:id="@+id/action_screen_overflow"
+                android:icon="@drawable/ic_screen_rotation_white_24dp"
+                android:title="@string/action_screen_orientation"
+                app:showAsAction="ifRoom">
+
+                <menu>
+
+                    <item
+                        android:id="@+id/action_default_orientation"
+                        android:title="@string/action_default_orientation"
+                        android:icon="@drawable/ic_lock_open_white_24dp"/>
+                    <item
+                        android:id="@+id/action_lock_portrait"
+                        android:title="@string/action_lock_portrait"
+                        android:icon="@drawable/ic_screen_lock_portrait_white_24dp"/>
+                    <item
+                        android:id="@+id/action_lock_landscape"
+                        android:title="@string/action_lock_landscape"
+                        android:icon="@drawable/ic_screen_lock_landscape_white_24dp"/>
+                </menu>
+            </item> -->
+        </menu>
+    </item>
+</menu>

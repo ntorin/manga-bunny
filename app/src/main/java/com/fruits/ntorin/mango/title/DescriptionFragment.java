@@ -2,6 +2,7 @@ package com.fruits.ntorin.mango.title;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ScrollView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fruits.ntorin.mango.R;
@@ -33,6 +34,7 @@ public class DescriptionFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private Bitmap mTitleCover;
+    private View mView;
 
     public DescriptionFragment() {
         // Required empty public constructor
@@ -60,6 +62,7 @@ public class DescriptionFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getInt(ARG_SECTION_NUMBER);
         }
+        //setRetainInstance(true);
     }
 
     @Override
@@ -67,9 +70,42 @@ public class DescriptionFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_description_chapters, container, false);
+
+        TextView descriptionText = (TextView) rootView.findViewById(R.id.description_title_description);
+        TextView infoText = (TextView) rootView.findViewById(R.id.description_title_info);
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), "fonts/Muli.ttf");
+        descriptionText.setTypeface(tf);
+        TextView author = (TextView) rootView.findViewById(R.id.description_title_author);
+        author.setTypeface(tf);
+
+        TextView artist = (TextView) rootView.findViewById(R.id.description_title_artist);
+        artist.setTypeface(tf);
+
+        TextView genres = (TextView) rootView.findViewById(R.id.description_title_genres);
+        genres.setTypeface(tf);
+
+        TextView status = (TextView) rootView.findViewById(R.id.description_title_status);
+        status.setTypeface(tf);
+
+        TextView rank = (TextView) rootView.findViewById(R.id.description_title_rank);
+        rank.setTypeface(tf);
+
+        mView = rootView;
+
+        //textView.setMovementMethod(new ScrollingMovementMethod());
         //ScrollView scrollView = (ScrollView) rootView.findViewById(fragment)
         //TextView textView = (TextView) rootView.findViewById(R.id.description_title_description);
         return rootView;
+    }
+
+    public void showView(boolean b) {
+        LinearLayout descriptionview = (LinearLayout) mView.findViewById(R.id.description_view);
+
+        if (b) {
+            descriptionview.setVisibility(View.VISIBLE);
+        } else {
+            descriptionview.setVisibility(View.INVISIBLE);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -97,14 +133,17 @@ public class DescriptionFragment extends Fragment {
     }
 
     public void setText(String text, TextView textView){
-         //// FIXME: 4/9/2016 java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.View android.view.View.findViewById(int)' on a null object reference
-
-        textView.setText(text);
+        if(textView != null) {
+            textView.setText(text); // TODO: 7/21/2016 maybe has errors
+        }
     }
 
-    public void setCover(Uri cover){
-        ImageView imageView = (ImageView) this.getView().findViewById(R.id.description_title_cover);
-        imageView.setImageURI(cover);
+
+    public void setCover(Bitmap cover){
+        if(getView() != null) {
+            ImageView imageView = (ImageView) this.getView().findViewById(R.id.description_title_cover);
+            imageView.setImageBitmap(cover);
+        }
     }
 
     /**

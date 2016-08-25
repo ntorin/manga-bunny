@@ -12,66 +12,144 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <RadioGroup
-            android:id="@+id/pickSourceGroup"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <RadioButton
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/pickSourceGroup"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="SearchSettings"
-                android:text="Mangafox"
-                android:textColor="#ffffff" />
+                android:orientation="vertical"
+                android:padding="15dp">
 
-            <RadioButton
-                android:id="@+id/pickSourceDefault"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="SearchSettings"
-                android:text="MangaHere"
-                android:textColor="#ffffff" />
 
-            <RadioButton
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sources_mangahere"
+                    android:onClick="SearchSettings"
+                    android:text="MangaHere"
+                    android:textColor="#ffffff" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sources_mangareader"
+                    android:onClick="SearchSettings"
+                    android:text="MangaReader"
+                    android:textColor="#ffffff" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sources_goodmanga"
+                    android:onClick="SearchSettings"
+                    android:text="GoodManga"
+                    android:textColor="#ffffff" />
+
+            </RadioGroup>
+
+
+            <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="SearchSettings"
-                android:text="Batoto"
-                android:textColor="#ffffff" />
-        </RadioGroup>
+                android:orientation="vertical"
+                android:id="@+id/pickSourceGroup2"
+                android:padding="15dp">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sources_mangafox"
+                    android:onClick="SearchSettings"
+                    android:text="MangaFox"
+                    android:textColor="#ffffff" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sources_mangapanda"
+                    android:onClick="SearchSettings"
+                    android:text="MangaPanda"
+                    android:textColor="#ffffff" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sources_mangainn"
+                    android:onClick="SearchSettings"
+                    android:text="MangaInn"
+                    android:textColor="#ffffff" />
+            </RadioGroup>
+        </LinearLayout>
 
         <RadioGroup
             android:id="@+id/sortByGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="15dp">
 
             <RadioButton
                 android:id="@+id/sortByDefault"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SearchSettings"
-                android:text="title"
+                android:text="Rank"
                 android:textColor="#ffffff" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SearchSettings"
-                android:text="rank"
+                android:text="Title"
+                android:textColor="#ffffff" />
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/completion_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="15dp">
+
+            <RadioButton
+                android:id="@+id/completion_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="SearchSettings"
+                android:text="All"
+                android:textColor="#ffffff" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="SearchSettings"
+                android:text="Completed"
+                android:textColor="#ffffff" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="SearchSettings"
+                android:text="Ongoing"
                 android:textColor="#ffffff" />
         </RadioGroup>
 
 
         <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="15dp">
 
             <LinearLayout
                 android:id="@+id/genreList"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
 
                 <LinearLayout
                     android:id="@+id/genreListLeft"
@@ -89,6 +167,7 @@
                     android:id="@+id/genreListRight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="right"
                     android:orientation="vertical"></LinearLayout>
             </LinearLayout>
 

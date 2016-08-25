@@ -17,4 +17,5 @@
     <color name="readerColorPrimaryDark">#000000</color>
     <color name="readerBackground">#0d0d0d</color>
     <color name="readerColorAccent">#ffffff</color>
+    <color name="primary_dark_material_dark">#171717</color>
 </resources>

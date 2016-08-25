@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_volume_navigation"
+        android:title="@string/pref_volume_navigation" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_screen_timeout"
+        android:title="@string/pref_screen_timeout" />
+
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/pref_reader_orientation"
+        android:entryValues="@array/pref_reader_orientation_values"
+        android:key="pref_reader_orientation"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_reader_orientation" />
+
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/pref_reader_direction"
+        android:entryValues="@array/pref_reader_direction_values"
+        android:key="pref_reader_direction"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_reader_direction" />
+
+
+</PreferenceScreen>

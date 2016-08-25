@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "672259376212",
+    "firebase_url": "https://admob-app-id-7811909059.firebaseio.com",
+    "project_id": "admob-app-id-7811909059",
+    "storage_bucket": "admob-app-id-7811909059.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672259376212:android:47774d1e9794605d",
+        "android_client_info": {
+          "package_name": "com.fruits.ntorin.mango"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "672259376212-2v3ftlthkikgtvldirrvqbmbh9j8t0p2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBarIAFpYaI6p76gi8Dw4o5Gpmsu_5QrEI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672259376212:android:87b76be9715a3e59",
+        "android_client_info": {
+          "package_name": "com.fruits.ntorin.bunny"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "672259376212-2v3ftlthkikgtvldirrvqbmbh9j8t0p2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBarIAFpYaI6p76gi8Dw4o5Gpmsu_5QrEI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

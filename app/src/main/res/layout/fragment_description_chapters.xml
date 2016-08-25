@@ -1,60 +1,207 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingBottom="55dp"
+    android:orientation="vertical"
+    android:id="@+id/description_view"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".title.DescriptionChapters$PlaceholderFragment"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout">
-
-    <ImageView
-        android:id="@+id/description_title_cover"
-        android:layout_width="100dp"
-        android:layout_height="155dp"
-        android:adjustViewBounds="true"
-        android:maxWidth="2000dp"
-        android:maxHeight="2000dp"
-        android:scaleType="centerCrop" />
-
-        <TextView
-            android:id="@+id/description_title_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/linearLayout"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:paddingLeft="5dp" />
-
-    </LinearLayout>
+    android:visibility="invisible">
 
     <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:paddingBottom="110dp"
-        android:id="@+id/scrollView"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:fillViewport="true"
-        android:layout_below="@+id/linearLayout">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/description_title_description"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="29dp" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/description_title_no_cover"
+                        android:layout_width="140dp"
+                        android:layout_height="217dp"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="2000dp"
+                        android:maxWidth="2000dp"
+                        android:paddingRight="15dp"
+                        android:src="@drawable/noimage"
+                        android:scaleType="fitCenter"
+                        android:paddingBottom="50dp" />
+
+                    <ImageView
+                        android:id="@+id/description_title_cover"
+                        android:layout_width="140dp"
+                        android:layout_height="217dp"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="2000dp"
+                        android:maxWidth="2000dp"
+                        android:paddingRight="15dp"
+                        android:scaleType="fitCenter" />
+                </RelativeLayout>
+
+                <!--<ScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"> -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/linearLayout">
+
+                        <ImageView
+                            android:id="@+id/authorimg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/description_title_author"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/ic_edit_white_24dp" />
+
+                        <TextView
+                            android:id="@+id/description_title_author"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_toEndOf="@+id/authorimg"
+                            android:layout_toRightOf="@+id/authorimg"
+                            android:textSize="7pt"
+                            android:paddingLeft="5dp"
+                            android:paddingBottom="5dp" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="5dp"
+                        android:layout_height="5dp" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/artistimg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/description_title_artist"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/ic_brush_white_24dp" />
+
+                        <TextView
+                            android:id="@+id/description_title_artist"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_toEndOf="@+id/artistimg"
+                            android:layout_toRightOf="@+id/artistimg"
+                            android:textSize="7pt"
+                            android:paddingLeft="5dp" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="10dp" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/description_title_genres"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:paddingLeft="5dp" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="10dp" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/description_title_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:paddingLeft="5dp" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="10dp" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/description_title_rank"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:paddingLeft="5dp" />
+                    </RelativeLayout>
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="10dp" />
+                </LinearLayout>
+                <!-- </ScrollView> -->
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/description_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/linearLayout"
+                android:paddingTop="15dp">
+
+                <!-- <ScrollView
+                    android:id="@+id/scrollView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true"
+                    android:scrollbars="vertical"> -->
+
+                <TextView
+                    android:id="@+id/description_title_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="15dp" />
+
+                <!-- </ScrollView> -->
+            </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
 
-
-</RelativeLayout>
+</LinearLayout>
 
 

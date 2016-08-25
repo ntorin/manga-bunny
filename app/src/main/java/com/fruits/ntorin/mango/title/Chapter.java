@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public class Chapter implements Serializable{
 
+    static final long serialVersionUID =999425709879355029L;
+
     public final String id;
     public final String content;
     public final String chno;
