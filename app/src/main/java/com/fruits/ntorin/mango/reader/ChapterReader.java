@@ -108,18 +108,9 @@ public class ChapterReader extends AppCompatActivity implements
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setUiOptions(ActivityInfo.UIOPTION_SPLIT_ACTION_BAR_WHEN_NARROW);
         super.onCreate(savedInstanceState);
-        /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);*/
         setContentView(R.layout.activity_chapter_reader);
-        final RelativeLayout maincontent = (RelativeLayout) findViewById(R.id.main_content);
-        maincontent.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        //final RelativeLayout maincontent = (RelativeLayout) findViewById(R.id.main_content);
+        //maincontent.setLayerType(View.LAYER_TYPE_SOFTWARE, null); //for disabling hardware acceleration
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 

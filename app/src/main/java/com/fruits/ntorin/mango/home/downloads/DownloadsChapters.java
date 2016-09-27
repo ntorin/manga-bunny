@@ -21,14 +21,14 @@ public class DownloadsChapters extends AppCompatActivity {
         setContentView(R.layout.activity_downloads_chapters);
         setTitle(getIntent().getStringExtra("title"));
         //Log.d("adblock", "started");
-         MobileAds.initialize(this, getString(R.string.firebase_app_id));
+         /* MobileAds.initialize(this, getString(R.string.firebase_app_id));
 
         AdView adView = (AdView) findViewById(R.id.adView);
         AdRequest request = new AdRequest.Builder()
                 /* .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                .addTestDevice("2031648F3AF51C33AE4F2672E64F95F5") */
+                .addTestDevice("2031648F3AF51C33AE4F2672E64F95F5") *
                 .build();
-        adView.loadAd(request);
+        adView.loadAd(request); */
 
         //Log.d("adblock", "ended");
 

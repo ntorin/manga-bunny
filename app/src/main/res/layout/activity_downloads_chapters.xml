@@ -48,7 +48,7 @@
 
     </FrameLayout>
 
-    <com.google.android.gms.ads.AdView
+    <!-- <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:layout_gravity="center_horizontal|top"
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@+id/file_list_container"
-        android:layout_alignStart="@+id/file_list_container"></com.google.android.gms.ads.AdView>
+        android:layout_alignStart="@+id/file_list_container"></com.google.android.gms.ads.AdView> -->
 
 
 </RelativeLayout>
